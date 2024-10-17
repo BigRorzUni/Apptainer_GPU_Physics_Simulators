@@ -14,14 +14,20 @@ apt-get install -y --force-yes \
     python \
     python3-pip \
     mesa-utils \
+    gpg
+  
   
 #Install VScode
-cd /tmp
-curl -o code.deb -L http://go.microsoft.com/fwlink/?LinkID=760868
-apt-get install -y ./code.deb
+apt-get update
+wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /usr/share/keyrings/microsoft.gpg > /dev/null
+sh -c 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
+apt-get update && apt-get install -y code
+#cd /tmp
+#curl -o code.deb -L http://go.microsoft.com/fwlink/?LinkID=760868
+#apt-get install -y ./code.deb
 
-# Install firefox
-#apt install -y --force-yes firefox
+# pip3 install torch
+
 
 # Let's have a custom PS1 to help people realise in which container they are
 # working.

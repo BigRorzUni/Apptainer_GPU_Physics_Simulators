@@ -2,8 +2,7 @@
 *.swp
 *.swo
 
-TrajOptKP_apptainer
-TrajOptKP.img
+Apptainer_RL/
 
 TrajOptKP/*
 mujoco/*
