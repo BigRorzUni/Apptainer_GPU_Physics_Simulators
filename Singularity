@@ -1,5 +1,4 @@
 bootstrap:docker
-#From:nvidia/cuda:12.4.1-cudnn-devel-ubuntu20.04
 From:ubuntu:22.04
 
 %labels
