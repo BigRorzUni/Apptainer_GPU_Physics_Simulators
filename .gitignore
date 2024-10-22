@@ -2,21 +2,9 @@
 *.swp
 *.swo
 
-Apptainer_RL/
+Apptainer_mujoco-mjx/
 
-TrajOptKP/*
 mujoco/*
 
 !home/
 home/*
-
-!home/catkin_ws
-home/catkin_ws/*
-
-!home/catkin_ws/src
-home/catkin_ws/src/*
-
-!home/catkin_ws/src/leeds_demos
-
-!home/.bashrc
-!home/catkin_ws/src/CMakeLists.txt

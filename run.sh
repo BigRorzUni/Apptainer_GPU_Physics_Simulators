@@ -20,6 +20,6 @@ singularity run \
     --bind=/run/user/${UID} \
     --home=home:${HOME} \
     --bind=$HOME/.ssh \
-    Apptainer_RL
+    Apptainer_mujoco-mjx
 
     #$(if lspci | grep -qi nvidia; then echo ' --nv'; else echo ''; fi) \
