@@ -58,6 +58,9 @@ pip install --upgrade "jax[cuda12]"
 pip install mujoco-mjx
 pip install brax
 
+# Install Matplotlib
+pip install matplotlib
+
 
 # Let's have a custom PS1 to help people realise in which container they are
 # working.
