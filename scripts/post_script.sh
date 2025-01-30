@@ -61,6 +61,12 @@ pip install brax
 # Install Matplotlib
 pip install matplotlib
 
+# Install pytorch for GPU
+pip3 install torch torchvision torchaudio
+
+# Install the genesis simulator
+pip install genesis-world
+
 
 # Let's have a custom PS1 to help people realise in which container they are
 # working.
