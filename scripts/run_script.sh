@@ -19,12 +19,13 @@ if [ ! -d "$HOME/MuJoCo_GPU_Learning" ]; then
     pip install mujoco-python-viewer
     
     # Install jax and jaxlib
+    pip install -U "jax[cuda12]"
     #pip install --upgrade pip
     #pip install --upgrade "jax[cuda12]"
 
     # Install mujoco-mjx
-    #pip install mujoco-mjx
-    #pip install brax
+    pip install mujoco-mjx
+    pip install brax
 
 else
 
