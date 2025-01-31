@@ -25,11 +25,11 @@ apt-get update && apt-get install -y code
 
 # --------------- Install CuDa / nvcc ----------------
 # Base installer
-wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-ubuntu2204.pin
-mv cuda-ubuntu2204.pin /etc/apt/preferences.d/cuda-repository-pin-600
-wget https://developer.download.nvidia.com/compute/cuda/12.4.0/local_installers/cuda-repo-ubuntu2204-12-4-local_12.4.0-550.54.14-1_amd64.deb
-dpkg -i cuda-repo-ubuntu2204-12-4-local_12.4.0-550.54.14-1_amd64.deb
-cp /var/cuda-repo-ubuntu2204-12-4-local/cuda-*-keyring.gpg /usr/share/keyrings/
+wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-ubuntu2404.pin
+mv cuda-ubuntu2404.pin /etc/apt/preferences.d/cuda-repository-pin-600
+wget https://developer.download.nvidia.com/compute/cuda/12.4.0/local_installers/cuda-repo-ubuntu2404-12-4-local_12.4.0-550.54.14-1_amd64.deb
+dpkg -i cuda-repo-ubuntu2404-12-4-local_12.4.0-550.54.14-1_amd64.deb
+cp /var/cuda-repo-ubuntu2404-12-4-local/cuda-*-keyring.gpg /usr/share/keyrings/
 apt-get update
 apt-get -y install cuda-toolkit-12-4
 
@@ -40,32 +40,13 @@ apt-get install -y cuda-drivers
 # Some prerequisite
 apt-get install zlib1g
 # Main installation
-wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb
+wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.1-1_all.deb
 dpkg -i cuda-keyring_1.1-1_all.deb
 apt-get update
 apt-get -y install cudnn9-cuda-12
 
-# ---------------- Install pip packages --------------------
-# Install mujoco and mujoco viewer
-pip install mujoco
-pip install mujoco-python-viewer
-
-# Install jax and jaxlib
-pip install --upgrade pip
-pip install --upgrade "jax[cuda12]"
-
-# Install mujoco-mjx
-pip install mujoco-mjx
-pip install brax
-
-# Install Matplotlib
-pip install matplotlib
-
-# Install pytorch for GPU
-pip3 install torch torchvision torchaudio
-
-# Install the genesis simulator
-pip install genesis-world
+# Install virtual environment pckage manager. 
+apt install python3.12-venv
 
 
 # Let's have a custom PS1 to help people realise in which container they are

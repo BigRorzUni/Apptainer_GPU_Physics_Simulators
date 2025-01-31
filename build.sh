@@ -1,7 +1,7 @@
 #!/bin/bash
 singularity build --fakeroot \
     --sandbox \
-    Apptainer_mujoco-mjx \
+    Apptainer_Physics_GPU \
     Singularity
 
 # Usually the home/.bashrc will include user-specific changes and we don't want
