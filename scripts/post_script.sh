@@ -46,7 +46,7 @@ apt-get update
 apt-get -y install cudnn9-cuda-12
 
 # Install virtual environment pckage manager. 
-apt install python3.12-venv
+apt install -y python3.12-venv
 
 
 # Let's have a custom PS1 to help people realise in which container they are
