@@ -6,5 +6,7 @@ Apptainer_Physics_GPU/
 
 mujoco/*
 
-!home/
 home/*
+!home/test/
+!home/test/**
+
