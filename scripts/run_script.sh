@@ -26,6 +26,8 @@ if [ ! -d "$HOME/MuJoCo_GPU_Learning" ]; then
     # Install mujoco-mjx
     pip install mujoco-mjx
     pip install brax
+    
+    pip install pytest
 
 else
 
