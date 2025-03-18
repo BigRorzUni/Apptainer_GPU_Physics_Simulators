@@ -1,9 +1,9 @@
 import jax
 import jax.numpy as jnp
 
-
-# Simple test script to ensure that jax devices cuda is listed and that we can perform a simple gpu computation
-print(jax.devices())
-x_gpu = jax.device_put(jnp.array([1.0, 2.0, 3.0]), device=jax.devices()[0])
-y_gpu = x_gpu * 2
-print(y_gpu)
+def test_jax_on_GPU():
+    devices = jax.devices()
+    assert any("cuda" or "gpu" in str(device).lower() for device in devices), "JAX is not using a GPU!"
+    x_gpu = jax.device_put(jnp.array([1.0, 2.0, 3.0]), device=jax.devices()[0])
+    y_gpu = x_gpu * 2
+    assert any("cuda" or "gpu" in str(y_gpu.device()).lower()), "JAX is not using a GPU!"

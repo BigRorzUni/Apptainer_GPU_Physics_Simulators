@@ -1,29 +1,19 @@
 import torch
 import pytest
 
-def check_pytorch_gpu():
-    print("PyTorch Version:", torch.__version__)
+def test_pytorch_using_GPU():
     gpu_available = torch.cuda.is_available()
 
     if gpu_available:
         device = torch.device("cuda")
-        print("GPU Device Name:", torch.cuda.get_device_name(0))
-        print("CUDA Version:", torch.version.cuda)
 
-        # Create a random tensor and move it to GPU
         tensor = torch.randn(3, 3).to(device)
-        print("Tensor on GPU:\n", tensor)
 
-        # Perform a simple computation on GPU
-        result = tensor @ tensor  # Matrix multiplication
-        print("Computation on GPU (Tensor @ Tensor):\n", result)
+        result = tensor @ tensor
 
-        # Check if the tensor is actually on the GPU
+        # Test that the result is still on the GPU
         assert result.device.type == "cuda"
-        # if result.device.type == "cuda":
-        #     print("GPU test successful! Computation performed on:", result.device)
-        # else:
-        #     print("GPU test failed. Tensor is not on GPU.")
-
-if __name__ == "__main__":
-    check_pytorch_gpu()
+    else:
+        # Fail because the GPU is not available
+        print("GPU backend not available for GPU")
+        assert 0 == 1
