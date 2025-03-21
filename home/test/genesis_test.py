@@ -5,6 +5,8 @@ def test_genesis_GPU_available():
     gs.init(backend=gs.gpu)
 
     # TODO add assert statment tos ee if geneiss working on GPU
+
+    
 # gs.init(backend=gs.cpu)
 
 # scene = gs.Scene(show_viewer=True)

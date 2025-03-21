@@ -23,13 +23,16 @@ def test_mjx_working_GPU():
   # Make model, data, and renderer
   mj_model = mujoco.MjModel.from_xml_string(xml)
   mj_data = mujoco.MjData(mj_model)
-  # renderer = mujoco.Renderer(mj_model)
 
   mjx_model = mjx.put_model(mj_model)
   mjx_data = mjx.put_data(mj_model, mj_data)
 
   print(mj_data.qpos, type(mj_data.qpos))
   print(mjx_data.qpos, type(mjx_data.qpos), mjx_data.qpos.devices())
+  print("device is: ", mjx_data.qpos.devices())
+
+  device = mjx_data.qpos.devices()
+  assert any("cuda" or "gpu" in str(device).lower()), "JAX is not using a GPU!"
 
   viewer = mujoco_viewer.MujocoViewer(mj_model, mj_data)
 
