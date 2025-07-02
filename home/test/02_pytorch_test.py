@@ -1,5 +1,4 @@
 import torch
-import pytest
 
 def test_pytorch_using_GPU():
     gpu_available = torch.cuda.is_available()
@@ -17,3 +16,9 @@ def test_pytorch_using_GPU():
         # Fail because the GPU is not available
         print("GPU backend not available for GPU")
         assert 0 == 1
+    
+    # free resources
+    torch.cuda.empty_cache()
+    torch.cuda.ipc_collect()
+
+    print("memory freed")

@@ -24,6 +24,7 @@ def test_mjx_working_GPU():
   mj_model = mujoco.MjModel.from_xml_string(xml)
   mj_data = mujoco.MjData(mj_model)
 
+  # Place model and data onto the GPU using MJX
   mjx_model = mjx.put_model(mj_model)
   mjx_data = mjx.put_data(mj_model, mj_data)
 
@@ -45,4 +46,3 @@ def test_mjx_working_GPU():
 
   viewer.close()
 
-  assert 1 == 1
