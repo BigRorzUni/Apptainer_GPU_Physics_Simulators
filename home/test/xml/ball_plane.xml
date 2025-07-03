@@ -1,7 +1,16 @@
 <mujoco model="ball_plane">
+  <option timestep="0.005" iterations="50" gravity="0 0 -9.81" integrator="Euler" />
+  
+  <default>
+    <!-- Default geom friction: static, dynamic, torsional -->
+    <geom friction="1 0.5 0.5" margin="0" condim="3" solimp="0.9 0.95 0.001" solref="0.02 1" />
+    <!-- Default joint damping -->
+    <joint damping="0.01" />
+  </default>
+  
   <worldbody>
     <!-- FLOOR -->
-    <geom name="floor" type="plane" pos="0 0 0" size="10 10 0.1" friction="1 0.5 0.5" />
+    <geom name="floor" type="plane" pos="0 0 0" size="10 10 0.1" />
     
     <!-- BALL -->
     <body name="ball" pos="0 0 1">
