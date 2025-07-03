@@ -1,5 +1,7 @@
 #!/bin/bash
 
+ISAAC_SIM_SIF="$HOME/isaac_sim_4.5.0.sif"
+
 if [ ! -d "$HOME/MuJoCo_GPU_Learning" ]; then
     git clone git@github.com:DMackRus/MuJoCo_GPU_Learning.git
     
@@ -37,3 +39,9 @@ else
 fi
 
 source $HOME/.bashrc
+echo "PATH after sourcing .bashrc: $PATH"
+export PATH="/usr/local/bin:$PATH"
+echo "PATH after prepending /usr/local/bin: $PATH"
+ls -l /usr/local/bin
+echo "Starting Isaac Sim"
+/usr/local/bin/apptainer exec --nv "$ISAAC_SIM_SIF" ./runheadless.native.sh

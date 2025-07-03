@@ -1,0 +1,12 @@
+<mujoco model="ball_plane">
+  <worldbody>
+    <!-- FLOOR -->
+    <geom name="floor" type="plane" pos="0 0 0" size="10 10 0.1" friction="1 0.5 0.5" />
+    
+    <!-- BALL -->
+    <body name="ball" pos="0 0 1">
+      <geom type="sphere" size="0.1" density="1000" />
+      <freejoint />
+    </body>
+  </worldbody>
+</mujoco>
