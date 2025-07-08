@@ -8,6 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from random import randint
 
+jax.config.update("jax_enable_x64", False)
 
 # load CPU-side model and data for viewer
 model = mujoco.MjModel.from_xml_path("../xml/ball_plane.xml")
@@ -17,7 +18,7 @@ data = mujoco.MjData(model)
 mjx_model = mjx.put_model(model)
 mjx_data = mjx.put_data(model, data)
 
-N = 50  
+N = 16  
 timesteps = 200
 
 # create N copies of the same initial state
@@ -67,7 +68,7 @@ for t in range(timesteps):
     viewer.render()
 viewer.close()
 
-
+plt.figure(figsize=(10, 6))
 
 # plot vertical position of the falling balls over time for all environments
 for i in range(N):

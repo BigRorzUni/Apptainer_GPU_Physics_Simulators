@@ -1,8 +1,7 @@
 #!/bin/bash
 
-ISAAC_SIM_SIF="$HOME/isaac_sim_4.5.0.sif"
-
 if [ ! -d "$HOME/MuJoCo_GPU_Learning" ]; then
+    # Skeleton tests
     git clone git@github.com:DMackRus/MuJoCo_GPU_Learning.git
     
     # Create a virtual environment
@@ -10,16 +9,20 @@ if [ ! -d "$HOME/MuJoCo_GPU_Learning" ]; then
     
     # Active the venv
     source GPU/bin/activate
+
+    pip install --upgrade pip
     
     # Install all python packages into the venv
     pip install matplotlib
     pip install torch torchvision torchaudio 
-    pip install genesis-world
+#    pip install genesis-world
+    
     
     # Install mujoco and mujoco viewer
     pip install mujoco
     pip install mujoco-python-viewer
-    
+
+    pip install git+https://github.com/Genesis-Embodied-AI/Genesis.git
     # Install jax and jaxlib
     pip install -U "jax[cuda12]"
     #pip install --upgrade pip
@@ -31,6 +34,14 @@ if [ ! -d "$HOME/MuJoCo_GPU_Learning" ]; then
     
     pip install pytest
 
+    #  Warp
+    pip install uv
+    uv pip install newton-physics
+    git clone https://github.com/newton-physics/newton
+#    python -m pip install mujoco --pre -f https://py.mujoco.org/
+#    python -m pip install warp-lang --pre -U -f https://pypi.nvidia.com/warp-lang/
+#    python -m pip install git+https://github.com/google-deepmind/mujoco_warp.git@main
+
 else
 
     # Active the venv
@@ -39,9 +50,3 @@ else
 fi
 
 source $HOME/.bashrc
-echo "PATH after sourcing .bashrc: $PATH"
-export PATH="/usr/local/bin:$PATH"
-echo "PATH after prepending /usr/local/bin: $PATH"
-ls -l /usr/local/bin
-echo "Starting Isaac Sim"
-/usr/local/bin/apptainer exec --nv "$ISAAC_SIM_SIF" ./runheadless.native.sh

@@ -3,12 +3,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch
 
-
-fields = gs.options.SimOptions.model_fields
-for name, field in fields.items():
-    print(f"{name}: type={field.annotation}, default={field.default}")
-
-
 phys_params = gs.options.RigidOptions(
     dt=0.005,
     integrator=gs.integrator.Euler,
@@ -36,7 +30,7 @@ n_ball_dofs = ball_dof_end - ball_dof_start
 #print(f"Ball DOFs from {ball_dof_start} to {ball_dof_end}")
 
 # Build scene in given environments
-N = 50
+N = 16
 scene.build(n_envs=N)
 
 vels = torch.zeros(N, n_dofs, device=gs.device)
@@ -78,4 +72,3 @@ plt.ylabel("Z Position")
 plt.title("Vertical positions over time (GS)")
 plt.grid(True)
 plt.savefig('gs_multi_env.png')
-

@@ -4,11 +4,16 @@ import mujoco_viewer
 import numpy as np
 import matplotlib.pyplot as plt
 
-N = 50
+N = 16
 timesteps = 200
 
 # Load the model once
 model = mujoco.MjModel.from_xml_path("../xml/ball_plane.xml")
+
+# downcast to 32-bit like mjx and genesis
+model.opt.timestep = np.float32(model.opt.timestep)
+model.opt.gravity = np.array(model.opt.gravity, dtype=np.float32)
+
 
 # Prepare to store logs: shape (timesteps, N, qpos_dim)
 qpos_logs = np.zeros((timesteps, N, model.nq))
@@ -45,6 +50,8 @@ for t in range(timesteps):
     mujoco.mj_forward(model, data_view)
     viewer.render()
 viewer.close()
+
+plt.figure(figsize=(10, 6))
 
 # Plot vertical position over time for all environments
 for i in range(N):
