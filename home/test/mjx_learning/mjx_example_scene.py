@@ -8,7 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from random import randint
 
-jax.config.update("jax_enable_x64", False)
+#jax.config.update("jax_enable_x64", False)
 
 # load CPU-side model and data for viewer
 model = mujoco.MjModel.from_xml_path("../xml/ball_plane.xml")

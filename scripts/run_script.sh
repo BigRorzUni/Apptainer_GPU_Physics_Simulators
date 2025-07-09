@@ -15,6 +15,7 @@ if [ ! -d "$HOME/MuJoCo_GPU_Learning" ]; then
     # Install all python packages into the venv
     pip install matplotlib
     pip install torch torchvision torchaudio 
+    pip install pandas
 #    pip install genesis-world
     
     
@@ -50,3 +51,5 @@ else
 fi
 
 source $HOME/.bashrc
+
+export XLA_PYTHON_CLIENT_PREALLOCATE=false # for weaker gpus

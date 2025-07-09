@@ -37,9 +37,6 @@ def test_newton_gpu_render():
         sim_time += dt
         state_0, state_1 = state_1, state_0
     
-    del model
-    del solver
-    del renderer
-
+    renderer.close()
 
     assert True
