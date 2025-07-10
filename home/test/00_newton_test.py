@@ -5,7 +5,7 @@ import warp as wp
 def test_newton_gpu_render():
     assert wp.is_cuda_available(), "CUDA GPU not available"
 
-    builder = newton.ModelBuilder(gravity=(0.0, 0.0, -9.81))
+    builder = newton.ModelBuilder()
     builder.add_ground_plane()
 
     model = builder.finalize(device="cuda")

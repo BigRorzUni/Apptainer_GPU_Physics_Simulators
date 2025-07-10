@@ -5,13 +5,11 @@ if __name__ == "__main__":
     dfMujoco = timing_helper.read_timing_csv('mujoco_pendulum_speed.csv')
     dfMJX = timing_helper.read_timing_csv('mjx_pendulum_speed.csv')
     dfGenesis = timing_helper.read_timing_csv('genesis_pendulum_speed.csv')
-    # genesis
-    # newton
+    dfNewton = timing_helper.read_timing_csv('newton_pendulum_speed.csv')
 
     df_combined = pd.merge(dfMujoco, dfMJX, on='steps', how='outer')
     df_combined = pd.merge(df_combined, dfGenesis, on='steps', how='outer')
-    # merge genesis
-    # merge newton
+    df_combined = pd.merge(df_combined, dfNewton, on="steps", how="outer")
 
     print(df_combined)
 

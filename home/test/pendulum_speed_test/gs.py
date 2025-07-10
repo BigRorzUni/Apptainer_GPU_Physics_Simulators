@@ -5,7 +5,6 @@ import torch
 import time
 
 
-
 import timing_helper
 
 phys_params = gs.options.RigidOptions(
@@ -34,23 +33,19 @@ if __name__ == "__main__":
     inputs = [int(x) for x in inputs]
     batch_sizes = [2048, 4096, 8192]
 
-
-
-    
-
     time_gpu_parallel = [[] for _ in range(len(batch_sizes))] 
 
     for size in inputs:
         for i, batch_size in enumerate(batch_sizes):
             gs.init(backend=gs.gpu)
 
-            scene = gs.Scene(show_viewer=False)  # or True if needed
+            scene = gs.Scene(show_viewer=False) 
             entity = scene.add_entity(gs.morphs.MJCF(file="pendulum.xml"))
             scene.build(n_envs=batch_size)
 
-            # Randomise position here once
-            rand_pos = torch.rand(batch_size, 3, device=gs.device) * 0.5 + torch.tensor([0.0, 0.0, 0.5], device=gs.device)
-            #entity.set_pos[:, 0, :] = rand_pos
+            # Randomise position of joint
+            rand_qpos = (torch.rand(batch_size, 1, device=gs.device) * 2 - 1) * torch.pi
+            entity.set_qpos(rand_qpos)
 
             t_gpu = simulate_GPU(scene, total_steps=size)
             time_gpu_parallel[i].append(t_gpu)
