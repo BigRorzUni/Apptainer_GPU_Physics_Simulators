@@ -46,7 +46,7 @@ if __name__ == "__main__":
             gs.init(backend=gs.gpu)
 
             scene = gs.Scene(show_viewer=False) 
-            entity = scene.add_entity(gs.morphs.MJCF(file="pendulum.xml"))
+            entity = scene.add_entity(gs.morphs.MJCF(file="../xml/pendulum.xml"))
             scene.build(n_envs=batch_size)
 
             # Randomise position of joint

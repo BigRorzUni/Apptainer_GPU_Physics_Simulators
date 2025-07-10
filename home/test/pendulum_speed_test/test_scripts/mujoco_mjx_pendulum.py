@@ -94,7 +94,7 @@ if __name__ == "__main__":
 
     inputs = [int(x) for x in inputs]
 
-    mj_model = mujoco.MjModel.from_xml_path("pendulum.xml")
+    mj_model = mujoco.MjModel.from_xml_path("../xml/pendulum.xml")
 
     batch_sizes = [2048, 4096, 8192]
 

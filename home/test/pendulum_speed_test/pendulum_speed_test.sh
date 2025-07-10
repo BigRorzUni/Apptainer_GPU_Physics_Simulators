@@ -4,7 +4,7 @@
 DATA_DIR="data"
 SCRIPT_DIR="test_scripts"
 
-XML="pendulum.xml"
+XML="../xml/pendulum.xml"
 INPUT_LB=3
 INPUT_UB=5
 INPUT_POINTS=5

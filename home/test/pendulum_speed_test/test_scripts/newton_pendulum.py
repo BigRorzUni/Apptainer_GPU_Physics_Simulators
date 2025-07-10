@@ -14,7 +14,7 @@ import sys
 class Pendulum:
     def __init__(self, stage_path="test.usd", num_envs=8):
         pendulum_builder = newton.ModelBuilder()
-        newton.utils.parse_mjcf("pendulum.xml", pendulum_builder)
+        newton.utils.parse_mjcf("../xml/pendulum.xml", pendulum_builder)
         
         builder = newton.ModelBuilder()
 
