@@ -4,6 +4,8 @@ import numpy as np
 import torch
 import time
 
+import sys
+
 
 import timing_helper
 
@@ -29,8 +31,12 @@ def simulate_GPU(scene, total_steps):
 
 
 if __name__ == "__main__":
-    inputs = np.logspace(1, 5, num = 5)
+    lower_bound = int(sys.argv[1])
+    upper_bound = int(sys.argv[2])
+    points = int(sys.argv[3])
+    inputs = np.logspace(lower_bound, upper_bound, points)
     inputs = [int(x) for x in inputs]
+    
     batch_sizes = [2048, 4096, 8192]
 
     time_gpu_parallel = [[] for _ in range(len(batch_sizes))] 
@@ -52,4 +58,4 @@ if __name__ == "__main__":
 
             gs.destroy()
 
-    timing_helper.send_times_csv(inputs, time_gpu_parallel, "genesis_pendulum_speed.csv", "Genesis Time GPU", batch_sizes)
+    timing_helper.send_times_csv(inputs, time_gpu_parallel, "data/genesis_pendulum_speed.csv", "Genesis Time GPU", batch_sizes)

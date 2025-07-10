@@ -13,11 +13,11 @@ import time
 import concurrent.futures
 import multiprocessing
 
-
 import math
 
-# Now you can import your helper module
 import timing_helper 
+
+import sys
 
 
 def simulate_step(model, data, num_steps):
@@ -87,7 +87,11 @@ def time_model(mj_model, total_steps, gpu_batch_sizes):
 if __name__ == "__main__":
     num_cores = multiprocessing.cpu_count()
 
-    inputs = np.logspace(1, 5, num = 5)
+    lower_bound = int(sys.argv[1])
+    upper_bound = int(sys.argv[2])
+    points = int(sys.argv[3])
+    inputs = np.logspace(lower_bound, upper_bound, points)
+
     inputs = [int(x) for x in inputs]
 
     mj_model = mujoco.MjModel.from_xml_path("pendulum.xml")
@@ -105,5 +109,5 @@ if __name__ == "__main__":
         for i, t in enumerate(t_gpu):
             time_gpu_parallel[i].append(t)
 
-    timing_helper.send_times_csv(inputs, time_cpu_parallel, "mujoco_pendulum_speed.csv", "MuJoCo Time CPU Parallel")
-    timing_helper.send_times_csv(inputs, time_gpu_parallel, "mjx_pendulum_speed.csv", "MJX Time GPU", batch_sizes)
+    timing_helper.send_times_csv(inputs, time_cpu_parallel, "data/mujoco_pendulum_speed.csv", "MuJoCo Time CPU Parallel")
+    timing_helper.send_times_csv(inputs, time_gpu_parallel, "data/mjx_pendulum_speed.csv", "MJX Time GPU", batch_sizes)

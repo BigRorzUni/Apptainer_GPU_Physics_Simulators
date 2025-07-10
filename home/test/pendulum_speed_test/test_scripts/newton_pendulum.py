@@ -9,6 +9,8 @@ import newton.utils
 import timing_helper
 import time
 
+import sys
+
 class Pendulum:
     def __init__(self, stage_path="test.usd", num_envs=8):
         pendulum_builder = newton.ModelBuilder()
@@ -94,8 +96,12 @@ def simulate_GPU(scene, total_steps):
 
 
 if __name__ == "__main__":
-    inputs = np.logspace(1, 5, num = 5)
+    lower_bound = int(sys.argv[1])
+    upper_bound = int(sys.argv[2])
+    points = int(sys.argv[3])
+    inputs = np.logspace(lower_bound, upper_bound, points)
     inputs = [int(x) for x in inputs]
+
     batch_sizes = [2048, 4096, 8192]
 
     time_gpu_parallel = [[] for _ in range(len(batch_sizes))] 
@@ -107,4 +113,4 @@ if __name__ == "__main__":
                 t_gpu = simulate_GPU(pendulum_test, size)
                 time_gpu_parallel[i].append(t_gpu)
 
-    timing_helper.send_times_csv(inputs, time_gpu_parallel, "newton_pendulum_speed.csv", "Newton Time GPU", batch_sizes)
+    timing_helper.send_times_csv(inputs, time_gpu_parallel, "data/newton_pendulum_speed.csv", "Newton Time GPU", batch_sizes)
