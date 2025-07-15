@@ -36,12 +36,13 @@ if [ ! -d "$HOME/MuJoCo_GPU_Learning" ]; then
     pip install pytest
 
     #  Warp
-    pip install uv
-    uv pip install newton-physics
+    #pip install uv
+    #uv pip install newton-physics
     git clone https://github.com/newton-physics/newton
-#    python -m pip install mujoco --pre -f https://py.mujoco.org/
-#    python -m pip install warp-lang --pre -U -f https://pypi.nvidia.com/warp-lang/
-#    python -m pip install git+https://github.com/google-deepmind/mujoco_warp.git@main
+    python -m pip install mujoco --pre -f https://py.mujoco.org/
+    python -m pip install warp-lang --pre -U -f https://pypi.nvidia.com/warp-lang/
+    python -m pip install git+https://github.com/google-deepmind/mujoco_warp.git@main
+    python -m pip install -e .[dev]
 
 else
 
