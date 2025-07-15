@@ -18,6 +18,11 @@ class Pendulum:
         
         builder = newton.ModelBuilder()
 
+        builder.default_shape_cfg.ke = 1.0e4        # Elastic stiffness
+        builder.default_shape_cfg.kd = 1.0e2        # Damping
+        builder.default_shape_cfg.kf = 1.0e2        # Friction stiffness
+        builder.default_shape_cfg.mu = 1.0          # Friction coefficient
+
         self.num_envs = num_envs
         self.sim_dt = 0.01
         self.sim_time = 0.0

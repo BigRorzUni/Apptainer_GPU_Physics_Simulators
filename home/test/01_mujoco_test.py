@@ -21,7 +21,7 @@ def test_mujoco_visualisation():
 
   viewer = mujoco_viewer.MujocoViewer(model, data)
 
-  for _ in range(10):
+  for _ in range(100):
       if viewer.is_alive:
           mujoco.mj_step(model, data)
           viewer.render()

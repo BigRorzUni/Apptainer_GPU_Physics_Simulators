@@ -9,13 +9,6 @@ import sys
 
 import timing_helper
 
-phys_params = gs.options.RigidOptions(
-    dt=0.005,
-    integrator=gs.integrator.Euler,
-    gravity=(0.0, 0.0, -9.81),
-    iterations=50,
-)
-
 def simulate_GPU(scene, total_steps):
     print(f"Start of GPU simulation for", total_steps, "in a batch of", scene.n_envs)
 

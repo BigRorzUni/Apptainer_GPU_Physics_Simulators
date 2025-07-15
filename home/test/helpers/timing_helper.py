@@ -2,7 +2,7 @@ import csv
 from matplotlib import pyplot
 import pandas as pd
 
-def send_times_csv(inputs, times, fname, label_prefix, batch_sizes=None):
+def send_times_csv(inputs, times, fname, label_prefix, batch_sizes=None, input_prefix="steps"):
     """
     Writes timing data to a CSV file. If multiple timing batches are provided,
     each gets a separate column. Otherwise, it's written as a single time series.
@@ -15,7 +15,7 @@ def send_times_csv(inputs, times, fname, label_prefix, batch_sizes=None):
     - batch_sizes: list of batch sizes if applicable, or None
     """
 
-    data = {'steps': inputs}
+    data = {input_prefix: inputs}
 
     if batch_sizes:
         for i, batch_size in enumerate(batch_sizes):
