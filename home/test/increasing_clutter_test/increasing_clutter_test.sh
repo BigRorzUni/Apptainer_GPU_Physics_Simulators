@@ -15,7 +15,8 @@ case "$1" in
 esac
 
 
-SPHERE_COUNTS=(1 10 100)
+STEPS=$(awk 'BEGIN {printf "%d\n", 1e2}')  # -> 100 as integer
+SPHERE_COUNTS=(1 10)
 
 
 XML_PATHS=()
@@ -32,44 +33,17 @@ for n in "${SPHERE_COUNTS[@]}"; do
     XML_PATHS+=("$XML_FILE")
 done
 
-XML_1=${XML_PATHS[0]}
-XML_10=${XML_PATHS[1]}
-XML_100=${XML_PATHS[2]}
-#XML_1000=${XML_PATHS[3]}
-
 echo "Generated or found XML files:"
-echo "  XML_1:     $XML_1"
-echo "  XML_10:    $XML_10"
-echo "  XML_100:   $XML_100"
-#echo "  XML_1000:  $XML_1000"
-
-INPUT_LB=2
-INPUT_UB=2
-INPUT_POINTS=1
-
-execute_tests() {
-    test=$1
-    echo $test
-    for i in "${XML_PATHS[@]}"!
-    do 
-        echo "testing scene $i"
-        python $test $INPUT_LB $INPUT_UB $INPUT_POINTS $i
-    done 
-
-}
 
 if [[ "$#" -eq 0 ]]; then
     echo "Running test on Newton"
-    #python test_scripts/newton_clutter.py "${XML_PATHS[@]}"
+    python test_scripts/newton_clutter.py "$STEPS" "${XML_PATHS[@]}"
 
     echo "Running test on Genesis"
-    #python test_scripts/genesis_clutter.py "${XML_PATHS[@]}"
+    python test_scripts/genesis_clutter.py "$STEPS" "${XML_PATHS[@]}"
 
-    echo "Running test on Mujoco"
-    python test_scripts/mujoco_clutter.py "${XML_PATHS[@]}"
-
-    echo "Running test on MJX"
-    python test_scripts/mjx_clutter.py "${XML_PATHS[@]}"
+    echo "Running test on Mujoco and MJX"
+    python test_scripts/mujoco_mjx_clutter.py "$STEPS" "${XML_PATHS[@]}"
 
     exit 0
 fi
@@ -78,19 +52,15 @@ fi
 case "$1" in
     Newton|newton)
         echo "Running test on ONLY Newton"
-        #python test_scripts/newton_clutter.py "${XML_PATHS[@]}"
+        python test_scripts/newton_clutter.py "$STEPS" "${XML_PATHS[@]}"
         ;;
     Genesis|genesis)
         echo "Running test on Genesis"
-        #python test_scripts/genesis_clutter.py "${XML_PATHS[@]}"
+        python test_scripts/genesis_clutter.py "$STEPS" "${XML_PATHS[@]}"
         ;;
     Mujoco|mujoco|MJX|mjx)
         echo "Running test on Mujoco and MJX"
-        execute_tests test_scripts/mujoco_mjx_clutter.py
-        ;;
-    MJX|mjx)
-        echo "Running test on MJX"
-        python test_scripts/mjx_clutter.py "${XML_PATHS[@]}"
+        python test_scripts/mujoco_mjx_clutter.py "$STEPS" "${XML_PATHS[@]}"
         ;;
     HELP|help)
         print_help

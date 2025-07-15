@@ -6,14 +6,13 @@ import argparse
 
 if __name__ == "__main__":
     dfMujoco = timing_helper.read_timing_csv('data/mujoco_clutter.csv')
-#    dfMJX = timing_helper.read_timing_csv('data/mjx_pendulum_speed.csv')
- #   dfGenesis = timing_helper.read_timing_csv('data/genesis_pendulum_speed.csv')
-  #  dfNewton = timing_helper.read_timing_csv('data/newton_pendulum_speed.csv')
+    dfMJX = timing_helper.read_timing_csv('data/mjx_clutter.csv')
+    dfGenesis = timing_helper.read_timing_csv('data/genesis_clutter.csv')
+    dfNewton = timing_helper.read_timing_csv('data/newton_clutter.csv')
 
-    df_combined = dfMujoco
-   # df_combined = pd.merge(dfMujoco, dfMJX, on='steps', how='outer')
-    #df_combined = pd.merge(df_combined, dfGenesis, on='steps', how='outer')
-    #df_combined = pd.merge(df_combined, dfNewton, on="steps", how="outer")
+    df_combined = pd.merge(dfMujoco, dfMJX, on='N', how='outer')
+    df_combined = pd.merge(df_combined, dfGenesis, on='N', how='outer')
+    df_combined = pd.merge(df_combined, dfNewton, on="N", how="outer")
 
     #print(df_combined)
 

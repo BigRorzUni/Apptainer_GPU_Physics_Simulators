@@ -6,7 +6,7 @@ import jax
 from jax import numpy as jp
 import numpy as np
 
-#jax.config.update("jax_enable_x64", False)
+jax.config.update("jax_enable_x64", False)
 
 import time
 
@@ -35,18 +35,20 @@ def simulate_GPU(mj_model, mj_data, total_steps, batch_size):
     mjx_model = mjx.put_model(mj_model)
     mjx_data = mjx.put_data(mj_model, mj_data)
 
-    rng = jax.random.PRNGKey(0)
-    rng = jax.random.split(rng, batch_size)
-    qpos_shape = mjx_data.qpos.shape
-    batch = jax.vmap(lambda rng: mjx_data.replace(qpos=jax.random.uniform(rng, qpos_shape)))(rng)
+    # Tile the same data batch_size times (no randomisation)
+    batch = jax.tree_util.tree_map(
+        lambda x: jp.tile(x[None], [batch_size] + [1] * x.ndim),
+        mjx_data
+    )
 
+    # JIT-compiled step function across batch
     jit_step = jax.jit(jax.vmap(mjx.step, in_axes=(None, 0)))
 
     num_batch_steps = math.ceil(total_steps / batch_size)
     print(f'num batch steps: {num_batch_steps}')
 
     time_start = time.time()
-    for i in range(num_batch_steps):
+    for _ in range(num_batch_steps):
         batch = jit_step(mjx_model, batch)
     time_gpu = time.time() - time_start
 
@@ -95,31 +97,33 @@ def extract_n_from_filename(path):
 if __name__ == "__main__":
     num_cores = multiprocessing.cpu_count()
 
-    lower_bound = int(sys.argv[1])
-    upper_bound = int(sys.argv[2])
-    points = int(sys.argv[3])
+    if len(sys.argv) < 3:
+        print("Usage: python run_mujoco_batch.py steps scene1.xml scene2.xml ...")
+        sys.exit(1)
 
-    inputs = np.logspace(lower_bound, upper_bound, points)
-    inputs = [int(x) for x in inputs]
+    xml_paths = sys.argv[2:]
+    steps = int(sys.argv[1])
 
-    path = str(sys.argv[4])
+    batch_sizes = [2048]
 
-    n = extract_n_from_filename(path)
-
-    mj_model = mujoco.MjModel.from_xml_path(path)
-
-    batch_sizes = [2048, 4096, 8192]
-
+    n_vals = []
     time_cpu_serial = []
     time_cpu_parallel = []
     time_gpu_parallel = [[] for _ in range(len(batch_sizes))] 
 
-    for size in inputs:
-        t_cpu_p, t_gpu = time_model(mj_model, size, batch_sizes)
-        time_cpu_parallel.append(t_cpu_p)
+    for path in xml_paths:
+        mj_model = mujoco.MjModel.from_xml_path(path)
+        n = extract_n_from_filename(path)
 
+        print(f"Executing {steps} steps on a scene with {n} object(s)")
+        
+        t_cpu_p, t_gpu = time_model(mj_model, steps, batch_sizes)
+
+        n_vals.append(n)
+        time_cpu_parallel.append(t_cpu_p)
         for i, t in enumerate(t_gpu):
             time_gpu_parallel[i].append(t)
 
-    timing_helper.send_times_csv(inputs, time_cpu_parallel, f"data/mujoco_clutter_{n}.csv", "MuJoCo Time CPU Parallel")
-    timing_helper.send_times_csv(inputs, time_gpu_parallel, f"data/mjx_clutter_{n}.csv", "MJX Time GPU", batch_sizes)
+
+    timing_helper.send_times_csv(n_vals, time_cpu_parallel, "data/mujoco_clutter.csv", "MuJoCo Time CPU", input_prefix="N")
+    timing_helper.send_times_csv(n_vals, time_gpu_parallel, "data/mjx_clutter.csv", "MJX Time GPU", batch_sizes, input_prefix="N")
