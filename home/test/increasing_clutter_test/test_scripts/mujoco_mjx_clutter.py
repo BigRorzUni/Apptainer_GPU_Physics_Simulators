@@ -104,7 +104,7 @@ if __name__ == "__main__":
     xml_paths = sys.argv[2:]
     steps = int(sys.argv[1])
 
-    batch_sizes = [2048]
+    batch_sizes = [2048, 4096, 8192]
 
     n_vals = []
     time_cpu_serial = []

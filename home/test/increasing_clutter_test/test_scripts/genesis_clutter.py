@@ -39,7 +39,7 @@ if __name__ == "__main__":
     steps = int(sys.argv[1])
 
 
-    batch_sizes = [2048]
+    batch_sizes = [2048, 4096, 8192]
 
     n_vals = []
     time_gpu_parallel = [[] for _ in range(len(batch_sizes))] 
