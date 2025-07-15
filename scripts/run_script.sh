@@ -51,5 +51,3 @@ else
 fi
 
 source $HOME/.bashrc
-
-export XLA_PYTHON_CLIENT_PREALLOCATE=false # for weaker gpus
