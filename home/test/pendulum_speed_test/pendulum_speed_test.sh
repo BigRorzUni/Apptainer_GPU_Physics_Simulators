@@ -6,8 +6,8 @@ SCRIPT_DIR="test_scripts"
 
 XML="../xml/pendulum.xml"
 INPUT_LB=3
-INPUT_UB=5
-INPUT_POINTS=5
+INPUT_UB=9
+INPUT_POINTS=8
 
 print_help() {
     echo "USAGE: ./pendulum_speed_test [ENGINE_TO_TEST]"

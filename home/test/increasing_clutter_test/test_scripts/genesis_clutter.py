@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
         print(f"Executing {steps} steps on a scene with {n} object(s)")
         for i, batch_size in enumerate(batch_sizes):
-            gs.init(backend=gs.gpu)
+            gs.init(backend=gs.gpu, performance_mode=True,logging_level='warning')
 
             scene = gs.Scene(show_viewer=False) 
             entity = scene.add_entity(gs.morphs.MJCF(file=path))

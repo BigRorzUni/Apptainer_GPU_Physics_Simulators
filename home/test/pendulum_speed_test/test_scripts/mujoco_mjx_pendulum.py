@@ -75,11 +75,16 @@ def time_model(mj_model, total_steps, gpu_batch_sizes):
         results = pool.starmap(simulate_step, [(mj_model, mj_data_instances[_], num_cpu_steps) for _ in range(num_cores)])
     time_cpu_parallel = time.time() - time_start
 
+    print(f"that took {time_cpu_parallel} (s)")   
+
     # ------------------------------- GPU parallel test --------------------------------------
 
     # For GPU we loop through different batch sizes and test
     for batch_size in gpu_batch_sizes:
-        time_gpu.append(simulate_GPU(mj_model, mj_data, total_steps, batch_size))
+        t = simulate_GPU(mj_model, mj_data, total_steps, batch_size)
+        time_gpu.append(t)
+        print(f"that took {t} (s)")
+
 
     return time_cpu_parallel, time_gpu
 
