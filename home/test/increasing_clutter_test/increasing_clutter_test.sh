@@ -11,7 +11,7 @@ case "$1" in
     echo "Done."
     cd ../increasing_clutter_test
     exit 0
-    
+
 esac
 
 
