@@ -5,11 +5,21 @@ import newton
 import newton.examples
 import newton.sim
 import newton.utils
+import argparse
 
 import timing_helper
 import time
 
-import sys
+parser = argparse.ArgumentParser(description="Run Newton Pendulum Simulation")
+
+parser.add_argument("input_lb", type=int, help="Lower bound of input range")
+parser.add_argument("input_ub", type=int, help="Upper bound of input range")
+parser.add_argument("input_points", type=int, help="Number of input points")
+parser.add_argument("-B", type=int, default=2048) # batch size
+
+args = parser.parse_args()
+
+n_envs = args.B
 
 class Pendulum:
     def __init__(self, stage_path="test.usd", num_envs=8):
@@ -17,11 +27,6 @@ class Pendulum:
         newton.utils.parse_mjcf("../xml/pendulum.xml", pendulum_builder)
         
         builder = newton.ModelBuilder()
-
-        builder.default_shape_cfg.ke = 1.0e4        # Elastic stiffness
-        builder.default_shape_cfg.kd = 1.0e2        # Damping
-        builder.default_shape_cfg.kf = 1.0e2        # Friction stiffness
-        builder.default_shape_cfg.mu = 1.0          # Friction coefficient
 
         self.num_envs = num_envs
         self.sim_dt = 0.01
@@ -44,12 +49,6 @@ class Pendulum:
         self.state_1 = self.model.state()
         self.control = self.model.control()
         self.contacts = self.model.collide(self.state_0)
-
-        # Create random joint positions in a NumPy array
-        random_q = np.random.uniform(-np.pi, np.pi, size=self.model.joint_q.shape).astype(np.float32)
-
-        # Assign to model.joint_q
-        wp.copy(self.model.joint_q, wp.array(random_q, dtype=wp.float32, device=self.model.joint_q.device))
 
         newton.sim.eval_fk(self.model, self.model.joint_q, self.model.joint_qd, self.state_0)
 
@@ -86,36 +85,61 @@ class Pendulum:
             self.sim_time += self.sim_dt
 
 def simulate_GPU(scene, total_steps):
-    print(f"Start of GPU simulation for", total_steps, "in a batch of", scene.num_envs)
+    print()
+    print("Warmup")
 
     num_batch_steps = int(total_steps / scene.num_envs)
+    print(f'Num steps per Env: {num_batch_steps}')
+    
+    for _ in range(200): 
+        scene.step()
 
-    time_start = time.time()
+    print("Warmup done, now testing")
+
+    t0 = time.perf_counter()
     for _ in range(num_batch_steps):
         scene.step()
-    time_gpu = time.time() - time_start
+    t1 = time.perf_counter()
 
-    print("This took", time_gpu, "(s)")
-    return time_gpu
+    t = t1-t0 
+    fps_per_env = round(1000 / t, 2)
+    total_fps = fps_per_env * n_envs
+    print(f'per env: {fps_per_env:,.2f} FPS')
+    print(f'total  : {total_fps:,.2f} FPS')
+    print(f'this took : {t1-t0} seconds')
 
+    return t, fps_per_env, total_fps
+
+
+
+def main():
+    print(f"Lower Bound: {args.input_lb}")
+    print(f"Upper Bound: {args.input_ub}")
+    print(f"Input Points: {args.input_points}")
+    print(f"Batch Size: {args.B}")
+    print("-----------------------------")
+
+    inputs = np.logspace(args.input_lb, args.input_ub, args.input_points)
+    inputs = [int(x) for x in inputs]
+
+    time = []
+    fps_per_env = []
+    total_fps = []
+
+
+    for steps in inputs:
+        with wp.ScopedDevice("cuda"):
+            pendulum_test = Pendulum(stage_path=None, num_envs=n_envs)
+            t, e_fps, t_fps = simulate_GPU(pendulum_test, steps)
+            
+            time.append(t)
+            fps_per_env.append(e_fps)
+            total_fps.append(t_fps)
+
+    timing_helper.send_times_csv(inputs, time, f"data/Newton/{n_envs}_speed.csv", f"Newton Time GPU - Batch size {n_envs} (s)")
+    timing_helper.send_times_csv(inputs, fps_per_env, f"data/Newton/{n_envs}_env_fps.csv", f"Newton FPS GPU - Batch size {n_envs}")
+    timing_helper.send_times_csv(inputs, total_fps, f"data/Newton/{n_envs}_total_fps.csv", f"Newton FPS GPU - Batch size {n_envs}")
 
 
 if __name__ == "__main__":
-    lower_bound = int(sys.argv[1])
-    upper_bound = int(sys.argv[2])
-    points = int(sys.argv[3])
-    inputs = np.logspace(lower_bound, upper_bound, points)
-    inputs = [int(x) for x in inputs]
-
-    batch_sizes = [2048, 4096, 8192]
-
-    time_gpu_parallel = [[] for _ in range(len(batch_sizes))] 
-
-    for size in inputs:
-        for i, batch_size in enumerate(batch_sizes):
-            with wp.ScopedDevice("cuda"):
-                pendulum_test = Pendulum(stage_path=None, num_envs=batch_size)
-                t_gpu = simulate_GPU(pendulum_test, size)
-                time_gpu_parallel[i].append(t_gpu)
-
-    timing_helper.send_times_csv(inputs, time_gpu_parallel, "data/newton_pendulum_speed.csv", "Newton Time GPU", batch_sizes)
+    main()

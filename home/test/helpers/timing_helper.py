@@ -24,7 +24,7 @@ def send_times_csv(inputs, times, fname, label_prefix, batch_sizes=None, input_p
     else:
         # Normalize times to a list of lists if there is only one batch
         times = [times]
-        data[f"{label_prefix} (s)"] = times[0]
+        data[f"{label_prefix}"] = times[0]
 
     df = pd.DataFrame(data)
     df.to_csv(fname, index=False)
@@ -38,7 +38,7 @@ def read_timing_csv(fname):
 import matplotlib.pyplot as plt
 import pandas as pd
 
-def plot_timings(df, x_col='steps', log_x=True, output='timing_results.png'):
+def plot_timings(df, x_col='steps', y_col='time (s)', title='Timing Results', log_x=True, output='timing_results.png'):
     """
     Create a timing plot from a pandas DataFrame.
 
@@ -61,8 +61,8 @@ def plot_timings(df, x_col='steps', log_x=True, output='timing_results.png'):
         plt.xscale('log')
 
     plt.xlabel(x_col)
-    plt.ylabel('Time (s)')
-    plt.title('Timing Results')
+    plt.ylabel(y_col)
+    plt.title(title)
     plt.legend()
     plt.grid(True)
     plt.savefig(output)
