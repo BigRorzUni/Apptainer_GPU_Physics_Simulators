@@ -12,6 +12,19 @@ import time
 import sys
 
 import re
+import argparse
+
+parser = argparse.ArgumentParser(description="Run Newton Clutter Simulation")
+
+parser.add_argument("steps", type=int, help="Simulation Steps")
+parser.add_argument("xml_paths", nargs="+", help="List of scene XML files")
+parser.add_argument("-B", type=int, default=2048) # batch size
+
+args = parser.parse_args()
+
+steps = args.steps
+xml_paths = args.xml_paths
+n_envs = args.B
 
 class Clutter:
     def __init__(self, xml_path, stage_path="test.usd", num_envs=8):
@@ -19,11 +32,6 @@ class Clutter:
         newton.utils.parse_mjcf(xml_path, pendulum_builder)
         
         builder = newton.ModelBuilder()
-
-        builder.default_shape_cfg.ke = 1.0e4        # Elastic stiffness
-        builder.default_shape_cfg.kd = 1.0e2        # Damping
-        builder.default_shape_cfg.kf = 1.0e2        # Friction stiffness
-        builder.default_shape_cfg.mu = 1.0          # Friction coefficient
 
         self.num_envs = num_envs
         self.sim_dt = 0.01
@@ -82,17 +90,30 @@ class Clutter:
             self.sim_time += self.sim_dt
 
 def simulate_GPU(scene, total_steps):
-    print(f"Start of GPU simulation for", total_steps, "in a batch of", scene.num_envs)
+    print()
+    print("Warmup")
 
     num_batch_steps = int(total_steps / scene.num_envs)
+    print(f'Num steps per Env: {num_batch_steps}')
 
-    time_start = time.time()
+    for _ in range(200): 
+        scene.step()
+
+    print("Warmup done, now testing")
+
+    t0 = time.perf_counter()
     for _ in range(num_batch_steps):
         scene.step()
-    time_gpu = time.time() - time_start
+    t1 = time.perf_counter()
 
-    print("This took", time_gpu, "(s)")
-    return time_gpu
+    t = t1-t0 
+    fps_per_env = round(1000 / t, 2)
+    total_fps = fps_per_env * n_envs
+    print(f'per env: {fps_per_env:,.2f} FPS')
+    print(f'total  : {total_fps:,.2f} FPS')
+    print(f'this took : {t1-t0} seconds')
+
+    return t, fps_per_env, total_fps
 
 def extract_n_from_filename(path):
     match = re.search(r'(\d+)', path)
@@ -100,30 +121,35 @@ def extract_n_from_filename(path):
         return int(match.group(1))
     return None
 
-if __name__ == "__main__":
-    if len(sys.argv) < 3:
-        print("Usage: python newton_clutter.py steps scene1.xml scene2.xml ...")
-        sys.exit(1)
+def main():
+    print(f'steps: {args.steps}')
+    print(f'xml_path: {args.xml_paths}')
+    print(f"Batch Size: {args.B}")
+    print("-----------------------------")
 
-    xml_paths = sys.argv[2:]
-    steps = int(sys.argv[1])
-
-
-    batch_sizes = [2048, 4096, 8192]
-
+    times = []
+    fps_per_env = []
+    total_fps = []
     n_vals = []
-    time_gpu_parallel = [[] for _ in range(len(batch_sizes))] 
 
     for path in xml_paths:
         n = extract_n_from_filename(path)
         n_vals.append(n)
 
         print(f"Executing {steps} steps on a scene with {n} object(s)")
-        for i, batch_size in enumerate(batch_sizes):
-            with wp.ScopedDevice("cuda"):
-                clutter_test = Clutter(stage_path=None, xml_path=path, num_envs=batch_size)
-                t_gpu = simulate_GPU(clutter_test, steps)
-                time_gpu_parallel[i].append(t_gpu)
+        with wp.ScopedDevice("cuda"):
+            clutter_test = Clutter(stage_path=None, xml_path=path, num_envs=n_envs)
+            t, e_fps, t_fps = simulate_GPU(clutter_test, steps)
+            
+            times.append(t)
+            fps_per_env.append(e_fps)
+            total_fps.append(t_fps)
                
 
-    timing_helper.send_times_csv(n_vals, time_gpu_parallel, "data/newton_clutter.csv", "Newton Time GPU", batch_sizes, input_prefix="N")
+    timing_helper.send_times_csv(n_vals, times, f"data/Newton/{n_envs}_speed.csv", f"Newton Time GPU - Batch size {n_envs} (s)", input_prefix="N")
+    timing_helper.send_times_csv(n_vals, fps_per_env, f"data/Newton/{n_envs}_env_fps.csv", f"Newton FPS GPU - Batch size {n_envs}", input_prefix="N")
+    timing_helper.send_times_csv(n_vals, total_fps, f"data/Newton/{n_envs}_total_fps.csv", f"Newton FPS GPU - Batch size {n_envs}", input_prefix="N")
+
+
+if __name__ == "__main__":
+    main()

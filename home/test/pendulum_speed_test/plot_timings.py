@@ -92,8 +92,8 @@ def get_plot_labels_and_title(file_type, simulators, batch_size=None):
 
 def main():
     parser = argparse.ArgumentParser(description="Load and merge timing CSVs from simulators")
-    parser.add_argument("--simulators", nargs="+", default=None, help="Simulators to include (e.g. Genesis MJX Mujoco Newton)")
-    parser.add_argument("--file_type", type=str, required=True, choices=["speed", "env_fps", "total_fps"], help="Type of timing data to load")
+    parser.add_argument("--simulators", nargs="+", default="all", help="Simulators to include (e.g. Genesis MJX Mujoco Newton)")
+    parser.add_argument("--file_type", type=str, required=True, choices=["speed", "env_fps", "total_fps"], help="Type of timing data to load (e.g. speed, env_fps, total_fps)")
     parser.add_argument("--batch_size", type=int, default=None, help="Specify batch size (default: load all)")
     parser.add_argument("--base_dir", type=str, default="data", help="Base data directory")
     args = parser.parse_args()
@@ -101,9 +101,9 @@ def main():
     base_dir = Path(args.base_dir)
     all_simulators = sorted([d.name for d in base_dir.iterdir() if d.is_dir()])
 
-    if not args.simulators:
+    if args.simulators == "all":
         args.simulators = all_simulators
-        print(f"No simulators specified, using all found: {args.simulators}")
+        print(f"Executing on all simulators: {args.simulators}")
 
     df = load_and_merge(args.base_dir, args.simulators, args.file_type, args.batch_size)
 
@@ -122,8 +122,21 @@ def main():
             out_filename += ".png"
 
         y_col, title = get_plot_labels_and_title(args.file_type, args.simulators, args.batch_size)
-        timing_helper.plot_timings(df, x_col='steps', y_col=y_col, title=title, log_x=True, output=out_filename)
-
+        if args.file_type in ["env_fps", "total_fps"]:
+            timing_helper.plot_fps(
+                df,
+                title=title,
+                output=out_filename
+            )
+        else:
+            timing_helper.plot_timings(
+                df,
+                x_col="steps",
+                y_col=y_col,
+                title=title,
+                log_x=True,
+                output=out_filename
+            )
 
 if __name__ == "__main__":
     main()

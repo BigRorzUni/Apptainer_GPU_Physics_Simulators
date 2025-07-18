@@ -67,3 +67,48 @@ def plot_timings(df, x_col='steps', y_col='time (s)', title='Timing Results', lo
     plt.grid(True)
     plt.savefig(output)
     print(f"Plot saved to {output}")
+
+import matplotlib.pyplot as plt
+
+import matplotlib.pyplot as plt
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+def plot_fps(df, x_col='steps', title='', output=None):
+    """
+    Plot a grouped bar chart of FPS data across different steps and simulators.
+
+    Parameters:
+    - df: pandas DataFrame with one column as x_col (e.g., 'steps')
+    - title: plot title
+    - output: filename to save the plot (optional)
+    """
+    steps = df[x_col].values
+    metrics = df.drop(columns=[x_col])
+    labels = metrics.columns
+    values = [metrics[label].values for label in labels]
+
+    x = np.arange(len(steps))  # label locations (0, 1, 2, ...)
+    width = 0.8 / len(labels)  # width of each bar within a group
+
+    plt.figure(figsize=(12, 6))
+
+    for i, (label, y) in enumerate(zip(labels, values)):
+        offset = (i - len(labels)/2) * width + width/2
+        plt.bar(x + offset, y, width, label=label)
+
+    plt.xticks(x, steps)
+    plt.xlabel(x_col)
+    plt.ylabel("FPS")
+    plt.title(title)
+    plt.legend()
+    plt.tight_layout()
+
+    if output:
+        plt.savefig(output)
+    else:
+        plt.show()

@@ -125,7 +125,7 @@ case "$1" in
 
         echo "Plotting results for simulators: ${SIMULATORS:-all}, file_type: $FILE_TYPE, batch_size: ${BATCH_SIZE_VAL:-all}"
 
-        python plot_timings.py $SIMULATORS_ARG --file_type "$FILE_TYPE" $BATCH_SIZE
+        python plot_timings.py $SIMULATORS_ARG --base_dir "../pendulum_speed_test/data" --file_type "$FILE_TYPE" $BATCH_SIZE
         ;;
 
 esac

@@ -122,7 +122,7 @@ def main():
     inputs = np.logspace(args.input_lb, args.input_ub, args.input_points)
     inputs = [int(x) for x in inputs]
 
-    time = []
+    times = []
     fps_per_env = []
     total_fps = []
 
@@ -132,11 +132,11 @@ def main():
             pendulum_test = Pendulum(stage_path=None, num_envs=n_envs)
             t, e_fps, t_fps = simulate_GPU(pendulum_test, steps)
             
-            time.append(t)
+            times.append(t)
             fps_per_env.append(e_fps)
             total_fps.append(t_fps)
 
-    timing_helper.send_times_csv(inputs, time, f"data/Newton/{n_envs}_speed.csv", f"Newton Time GPU - Batch size {n_envs} (s)")
+    timing_helper.send_times_csv(inputs, times, f"data/Newton/{n_envs}_speed.csv", f"Newton Time GPU - Batch size {n_envs} (s)")
     timing_helper.send_times_csv(inputs, fps_per_env, f"data/Newton/{n_envs}_env_fps.csv", f"Newton FPS GPU - Batch size {n_envs}")
     timing_helper.send_times_csv(inputs, total_fps, f"data/Newton/{n_envs}_total_fps.csv", f"Newton FPS GPU - Batch size {n_envs}")
 

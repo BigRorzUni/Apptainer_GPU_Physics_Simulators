@@ -7,14 +7,17 @@ import multiprocessing
 import math
 import timing_helper 
 import argparse
+import re
 
-parser = argparse.ArgumentParser(description="Run Mujoco Pendulum Simulation")
+parser = argparse.ArgumentParser(description="Run Newton Clutter Simulation")
 
-parser.add_argument("input_lb", type=int, help="Lower bound of input range")
-parser.add_argument("input_ub", type=int, help="Upper bound of input range")
-parser.add_argument("input_points", type=int, help="Number of input points")
+parser.add_argument("steps", type=int, help="Simulation Steps")
+parser.add_argument("xml_paths", nargs="+", help="List of scene XML files")
 
 args = parser.parse_args()
+
+steps = args.steps
+xml_paths = args.xml_paths
 
 def simulate_step(model, data, num_steps):
     for _ in range(num_steps):
@@ -55,35 +58,42 @@ def time_model(mj_model, steps):
 
     return t, fps_per_env, total_fps
 
-    
+def extract_n_from_filename(path):
+    match = re.search(r'(\d+)', path)
+    if match:
+        return int(match.group(1))
+    return None
 
 def main():
-    print(f"Lower Bound: {args.input_lb}")
-    print(f"Upper Bound: {args.input_ub}")
-    print(f"Input Points: {args.input_points}")
-
-    inputs = np.logspace(args.input_lb, args.input_ub, args.input_points)
-    inputs = [int(x) for x in inputs]
-
-    mj_model = mujoco.MjModel.from_xml_path("../xml/pendulum.xml")
-
-    mj_model.opt.solver = 1 
-    mj_model.opt.timestep = 0.01
+    print(f'steps: {args.steps}')
+    print(f'xml_path: {args.xml_paths}')
+    print("-----------------------------")
 
     times = []
     fps_per_env = []
     total_fps = []
+    n_vals = []
 
-    for steps in inputs:
+    for path in xml_paths:
+        n = extract_n_from_filename(path)
+        n_vals.append(n)
+
+        print(f"Executing {steps} steps on a scene with {n} object(s)")
+
+        mj_model = mujoco.MjModel.from_xml_path(path)
+
+        mj_model.opt.solver = 1 
+        mj_model.opt.timestep = 0.01
+
         t, e_fps, t_fps = time_model(mj_model, steps)
 
         times.append(t)
         fps_per_env.append(e_fps)
         total_fps.append(t_fps)
     
-    timing_helper.send_times_csv(inputs, times, "data/Mujoco/speed.csv", "MuJoCo Time CPU Parallel (s)")
-    timing_helper.send_times_csv(inputs, fps_per_env, "data/Mujoco/env_fps.csv", "MuJoCo FPS CPU Parallel")
-    timing_helper.send_times_csv(inputs, total_fps, "data/Mujoco/total_fps.csv", "MuJoCo FPS CPU Parallel")
+    timing_helper.send_times_csv(n_vals, times, "data/Mujoco/speed.csv", "MuJoCo Time CPU Parallel (s)", input_prefix="N")
+    timing_helper.send_times_csv(n_vals, fps_per_env, "data/Mujoco/env_fps.csv", "MuJoCo FPS CPU Parallel", input_prefix="N")
+    timing_helper.send_times_csv(n_vals, total_fps, "data/Mujoco/total_fps.csv", "MuJoCo FPS CPU Parallel", input_prefix="N")
 
 if __name__ == "__main__":
     main()

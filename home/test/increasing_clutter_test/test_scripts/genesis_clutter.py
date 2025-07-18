@@ -8,21 +8,47 @@ import sys
 
 import re
 
-
 import timing_helper
+import argparse
+
+parser = argparse.ArgumentParser(description="Run Newton Clutter Simulation")
+
+parser.add_argument("steps", type=int, help="Simulation Steps")
+parser.add_argument("xml_paths", nargs="+", help="List of scene XML files")
+parser.add_argument("-B", type=int, default=2048) # batch size
+
+args = parser.parse_args()
+
+steps = args.steps
+xml_paths = args.xml_paths
+n_envs = args.B
 
 def simulate_GPU(scene, total_steps):
-    print(f"Start of GPU simulation for", total_steps, "in a batch of", scene.n_envs)
+    print()
+    print("Warmup")
 
     num_batch_steps = int(total_steps / scene.n_envs)
 
-    time_start = time.time()
+    print(f'Num steps per Env: {num_batch_steps}')
+    
+    for i in range(200): 
+        scene.step()
+
+    print("Warmup done, now testing")
+
+    t0 = time.perf_counter()
     for _ in range(num_batch_steps):
         scene.step()
-    time_gpu = time.time() - time_start
+    t1 = time.perf_counter()
 
-    print("This took", time_gpu, "(s)")
-    return time_gpu
+    t = t1-t0 
+    fps_per_env = round(1000 / t, 2)
+    total_fps = fps_per_env * n_envs
+    print(f'per env: {fps_per_env:,.2f} FPS')
+    print(f'total  : {total_fps:,.2f} FPS')
+    print(f'this took : {t1-t0} seconds')
+
+    return t, fps_per_env, total_fps
 
 def extract_n_from_filename(path):
     match = re.search(r'(\d+)', path)
@@ -30,36 +56,50 @@ def extract_n_from_filename(path):
         return int(match.group(1))
     return None
 
-if __name__ == "__main__":
-    if len(sys.argv) < 3:
-        print("Usage: python genesis_clutter.py steps scene1.xml scene2.xml ...")
-        sys.exit(1)
+def main():
+    print(f'steps: {args.steps}')
+    print(f'xml_path: {args.xml_paths}')
+    print(f"Batch Size: {args.B}")
+    print("-----------------------------")
 
-    xml_paths = sys.argv[2:]
-    steps = int(sys.argv[1])
-
-
-    batch_sizes = [2048, 4096, 8192]
-
+    times = []
+    fps_per_env = []
+    total_fps = []
     n_vals = []
-    time_gpu_parallel = [[] for _ in range(len(batch_sizes))] 
 
     for path in xml_paths:
         n = extract_n_from_filename(path)
         n_vals.append(n)
 
         print(f"Executing {steps} steps on a scene with {n} object(s)")
-        for i, batch_size in enumerate(batch_sizes):
-            gs.init(backend=gs.gpu, performance_mode=True,logging_level='warning')
 
-            scene = gs.Scene(show_viewer=False) 
-            entity = scene.add_entity(gs.morphs.MJCF(file=path))
+        print("Setting up scene")
 
-            scene.build(n_envs=batch_size)
+        gs.init(backend=gs.gpu,logging_level='warning')
 
-            t_gpu = simulate_GPU(scene, total_steps=steps)
-            time_gpu_parallel[i].append(t_gpu)
+        scene = gs.Scene(
+            show_viewer=False,
+            rigid_options=gs.options.RigidOptions(
+                dt=0.01,
+                constraint_solver=gs.constraint_solver.CG, # to match mjx
+                tolerance=1e-8, # to match mjx
+            ),
+        )
 
-            gs.destroy()
+        scene.add_entity(gs.morphs.MJCF(file=path))
+        scene.build(n_envs)
 
-    timing_helper.send_times_csv(n_vals, time_gpu_parallel, "data/genesis_clutter.csv", "Genesis Time GPU", batch_sizes, input_prefix="N")
+        t, e_fps, t_fps = simulate_GPU(scene, steps)
+
+        times.append(t)
+        fps_per_env.append(e_fps)
+        total_fps.append(t_fps)
+
+        gs.destroy()
+
+    timing_helper.send_times_csv(n_vals, times, f"data/Genesis/{n_envs}_speed.csv", "Speed (s)", input_prefix="N")
+    timing_helper.send_times_csv(n_vals, fps_per_env, f"data/Genesis/{n_envs}_env_fps.csv", "FPS", input_prefix="N")
+    timing_helper.send_times_csv(n_vals, total_fps, f"data/Genesis/{n_envs}_total_fps.csv", "FPS", input_prefix="N")
+
+if __name__ == "__main__":
+    main()

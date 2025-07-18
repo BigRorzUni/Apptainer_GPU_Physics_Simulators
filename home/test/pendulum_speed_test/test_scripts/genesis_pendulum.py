@@ -54,7 +54,9 @@ def main():
     inputs = np.logspace(args.input_lb, args.input_ub, args.input_points)
     inputs = [int(x) for x in inputs]
 
-    gs.init(backend=gs.gpu, performance_mode=True, logging_level='warning')
+    print("Setting up scene")
+
+    gs.init(backend=gs.gpu, logging_level='warning')
 
     scene = gs.Scene(
         show_viewer=False,
@@ -65,21 +67,22 @@ def main():
         ),
     )
 
-    entity = scene.add_entity(gs.morphs.MJCF(file="../xml/pendulum.xml"))
+    scene.add_entity(gs.morphs.MJCF(file="../xml/pendulum.xml"))
+    
     scene.build(n_envs)
 
-    time = []
+    times = []
     fps_per_env = []
     total_fps = []
 
     for steps in inputs:
         t, e_fps, t_fps = simulate(scene, steps)
 
-        time.append(t)
+        times.append(t)
         fps_per_env.append(e_fps)
         total_fps.append(t_fps)
 
-    timing_helper.send_times_csv(inputs, time, f"data/Genesis/{n_envs}_speed.csv", "Speed (s)")
+    timing_helper.send_times_csv(inputs, times, f"data/Genesis/{n_envs}_speed.csv", "Speed (s)")
     timing_helper.send_times_csv(inputs, fps_per_env, f"data/Genesis/{n_envs}_env_fps.csv", "FPS")
     timing_helper.send_times_csv(inputs, total_fps, f"data/Genesis/{n_envs}_total_fps.csv", "FPS")
 
