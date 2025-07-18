@@ -5,6 +5,8 @@ import jax
 from jax import numpy as jp
 import numpy as np
 
+jax.config.update("jax_enable_x64", False)
+
 import time
 import math
 import timing_helper 

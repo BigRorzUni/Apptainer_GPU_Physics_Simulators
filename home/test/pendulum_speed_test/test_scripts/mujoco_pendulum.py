@@ -1,6 +1,4 @@
 import mujoco
-import mujoco_viewer
-
 import numpy as np
 import time
 import multiprocessing
