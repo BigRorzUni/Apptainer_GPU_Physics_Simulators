@@ -13,7 +13,7 @@ import argparse
 import os
 import re
 
-parser = argparse.ArgumentParser(description="Run MJX Clutter Simulation")
+parser = argparse.ArgumentParser(description="Run MJX contacts Simulation")
 
 parser.add_argument("steps", type=int, help="Simulation Steps")
 parser.add_argument("xml_paths", nargs="+", help="List of scene XML files")
@@ -104,7 +104,7 @@ def main():
         n = extract_n_from_filename(path)
         n_vals.append(n)
 
-        print(f"Executing {steps} steps on a scene with {n} object(s)")
+        print(f"Executing {steps} steps on a scene with contacts between {n} free joint(s)")
 
         mj_model = mujoco.MjModel.from_xml_path(path)
 
