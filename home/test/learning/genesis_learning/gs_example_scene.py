@@ -1,74 +1,75 @@
-import genesis as gs
-import matplotlib.pyplot as plt
 import numpy as np
-import torch
+import genesis as gs
 
-phys_params = gs.options.RigidOptions(
-    dt=0.005,
-    integrator=gs.integrator.Euler,
-    gravity=(0.0, 0.0, -9.81),
-    iterations=50,
-)
-
+########################## init ##########################
 gs.init(backend=gs.gpu)
 
-scene = gs.Scene(show_viewer=True, rigid_options=phys_params)
+########################## create a scene ##########################
+scene = gs.Scene(
+    viewer_options = gs.options.ViewerOptions(
+        camera_pos    = (0, -3.5, 2.5),
+        camera_lookat = (0.0, 0.0, 0.5),
+        camera_fov    = 30,
+        max_FPS       = 60,
+    ),
+    sim_options = gs.options.SimOptions(
+        dt = 0.01,
+    ),
+    show_viewer = True,
+)
 
-# Load your MJCF describing plane + ball
-entity = scene.add_entity(gs.morphs.MJCF(file='../xml/ball_plane.xml'))
+########################## entities ##########################
+plane = scene.add_entity(
+    gs.morphs.Plane(),
+)
 
-ball = entity.get_link("ball")
-ball_id = ball.idx
+# when loading an entity, you can specify its pose in the morph.
+franka = scene.add_entity(
+    gs.morphs.MJCF(
+        file  = '../../xml/franka_emika_panda/panda.xml',
+        pos   = (1.0, 1.0, 0.0),
+        euler = (0, 0, 0),
+    ),
+)
 
-ball = entity.get_link("ball")
-ball_dof_start = ball.dof_start
-ball_dof_end = ball.dof_end
-n_dofs = entity.n_dofs
-n_ball_dofs = ball_dof_end - ball_dof_start
+########################## build ##########################
+scene.build()
 
-#print(f"Total DOFs in entity: {n_dofs}")
-#print(f"Ball DOFs from {ball_dof_start} to {ball_dof_end}")
+jnt_names = [
+    'joint1',
+    'joint2',
+    'joint3',
+    'joint4',
+    'joint5',
+    'joint6',
+    'joint7',
+    'finger_joint1',
+    'finger_joint2',
+]
+dofs_idx = [franka.get_joint(name).dof_idx_local for name in jnt_names]
 
-# Build scene in given environments
-N = 16
-scene.build(n_envs=N)
+############ Optional: set control gains ############
+# set positional gains
+franka.set_dofs_kp(
+    kp             = np.array([4500, 4500, 3500, 3500, 2000, 2000, 2000, 100, 100]),
+    dofs_idx_local = dofs_idx,
+)
+# set velocity gains
+franka.set_dofs_kv(
+    kv             = np.array([450, 450, 350, 350, 200, 200, 200, 10, 10]),
+    dofs_idx_local = dofs_idx,
+)
+# set force range for safety
+franka.set_dofs_force_range(
+    lower          = np.array([-87, -87, -87, -87, -12, -12, -12, -100, -100]),
+    upper          = np.array([ 87,  87,  87,  87,  12,  12,  12,  100,  100]),
+    dofs_idx_local = dofs_idx,
+)
 
-vels = torch.zeros(N, n_dofs, device=gs.device)
+print(dofs_idx)
 
-# Random initial velocities for each env, uniform in [-1,1]
-random_vels = ((2 * torch.rand(N, n_ball_dofs) - 1) * 3).to(gs.device)
-
-# Assign these random velocities to the ball DOFs
-vels[:, ball_dof_start:ball_dof_end] = random_vels
-
-print("combined qvel:\n", vels)
-
-entity.set_dofs_velocity(vels)
-
-steps = 200
-
-z_vals = []
+# PD control
+steps = 1000
 for i in range(steps):
+
     scene.step()
-    pos = entity.get_links_pos()  # shape (num_links, 3)
-
-    ball_pos = pos[:, ball_id]
-    z_pos = ball_pos[:,2]
-    z_vals.append(z_pos.cpu().numpy())
-
-z_vals_all_envs = np.array(z_vals)
-num_steps = z_vals_all_envs.shape[0]
-
-# free resources
-gs.destroy()
-
-plt.figure(figsize=(10, 6))
-
-for env_idx in range(N):
-    plt.plot(range(num_steps), z_vals_all_envs[:, env_idx], label=f'Env {env_idx}')
-
-plt.xlabel("Time step")
-plt.ylabel("Z Position")
-plt.title("Vertical positions over time (GS)")
-plt.grid(True)
-plt.savefig('gs_multi_env.png')
