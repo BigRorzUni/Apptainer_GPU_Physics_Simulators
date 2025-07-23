@@ -1,0 +1,14 @@
+<mujoco model="single_contact">
+    <option gravity="0 0 -9.81" integrator="Euler" timestep="0.01"/>
+
+    <worldbody>
+        <!-- Static plane -->
+        <geom name="floor" type="plane" pos="0 0 0" size="1 1 0.1" rgba="0.2 0.2 0.2 1" condim="3"/>
+
+        <!-- Sphere resting just on top of the plane -->
+        <body name="sphere_0" pos="0 0 0.1"> <!-- z = radius of the sphere -->
+            <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1"/>
+            <freejoint/>
+        </body>
+    </worldbody>
+</mujoco>

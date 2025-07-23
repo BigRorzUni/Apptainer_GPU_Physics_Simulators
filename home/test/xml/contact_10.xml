@@ -1,0 +1,60 @@
+<mujoco model="ten_contacts">
+    <option gravity="0 0 -9.81" integrator="Euler" timestep="0.01"/>
+    <size njmax="100" nconmax="100"/>
+
+    <worldbody>
+        <!-- Static floor -->
+        <geom name="floor" type="plane" pos="0 0 0" size="50 50 0.1" rgba="0.2 0.2 0.2 1" condim="3"/>
+
+        <!-- Cluster of 10 overlapping spheres -->
+        <body name="sphere_0" pos="0 0 0.09">
+            <geom type="sphere" size="0.1" rgba="1 0 0 1"/>
+            <freejoint/>
+        </body>
+
+        <body name="sphere_1" pos="0.18 0 0.09">
+            <geom type="sphere" size="0.1" rgba="0 1 0 1"/>
+            <freejoint/>
+        </body>
+
+        <body name="sphere_2" pos="0.09 0.15 0.09">
+            <geom type="sphere" size="0.1" rgba="0 0 1 1"/>
+            <freejoint/>
+        </body>
+
+        <body name="sphere_3" pos="-0.18 0 0.09">
+            <geom type="sphere" size="0.1" rgba="1 1 0 1"/>
+            <freejoint/>
+        </body>
+
+        <body name="sphere_4" pos="0 -0.18 0.09">
+            <geom type="sphere" size="0.1" rgba="1 0 1 1"/>
+            <freejoint/>
+        </body>
+
+        <body name="sphere_5" pos="-0.09 -0.15 0.09">
+            <geom type="sphere" size="0.1" rgba="0 1 1 1"/>
+            <freejoint/>
+        </body>
+
+        <body name="sphere_6" pos="0.12 0.12 0.09">
+            <geom type="sphere" size="0.1" rgba="0.5 0.5 1 1"/>
+            <freejoint/>
+        </body>
+
+        <body name="sphere_7" pos="-0.12 -0.12 0.09">
+            <geom type="sphere" size="0.1" rgba="1 0.5 0.5 1"/>
+            <freejoint/>
+        </body>
+
+        <body name="sphere_8" pos="0.1 -0.1 0.09">
+            <geom type="sphere" size="0.1" rgba="0.3 0.7 0.3 1"/>
+            <freejoint/>
+        </body>
+
+        <body name="sphere_9" pos="-0.1 0.1 0.09">
+            <geom type="sphere" size="0.1" rgba="0.7 0.3 0.7 1"/>
+            <freejoint/>
+        </body>
+    </worldbody>
+</mujoco>

@@ -5,33 +5,28 @@ import jax
 from jax import numpy as jp
 import numpy as np
 
-jax.config.update("jax_enable_x64", False)
-
 import time
 import math
 import timing_helper 
 import argparse
 
 import os
-import re
 
-parser = argparse.ArgumentParser(description="Run MJX Clutter Simulation")
+parser = argparse.ArgumentParser(description="Run MJX Pendulum Simulation")
 
-parser.add_argument("steps", type=int, help="Simulation Steps")
-parser.add_argument("xml_paths", nargs="+", help="List of scene XML files")
+parser.add_argument("input_lb", type=int, help="Lower bound of input range")
+parser.add_argument("input_ub", type=int, help="Upper bound of input range")
+parser.add_argument("input_points", type=int, help="Number of input points")
 parser.add_argument("-B", type=int, default=2048) # batch size
 
 args = parser.parse_args()
-
-steps = args.steps
-xml_paths = args.xml_paths
-n_envs = args.B
 
 ###### will boost performance by 30% according to mjx documentation ######
 xla_flags = os.environ.get('XLA_FLAGS', '')
 xla_flags += ' --xla_gpu_triton_gemm_any=True'
 os.environ['XLA_FLAGS'] = xla_flags
 
+n_envs = args.B
 jit_steps = 1
 
 def time_model(mj_model, steps):
@@ -85,44 +80,36 @@ def time_model(mj_model, steps):
 
     return t, fps_per_env, total_fps
 
-def extract_n_from_filename(path):
-    match = re.search(r'(\d+)', path)
-    if match:
-        return int(match.group(1))
-    return None
+    
 
 def main():
-    print(f'steps: {args.steps}')
-    print(f'xml_path: {args.xml_paths}')
+    print(f"Lower Bound: {args.input_lb}")
+    print(f"Upper Bound: {args.input_ub}")
+    print(f"Input Points: {args.input_points}")
     print(f"Batch Size: {args.B}")
-    print("-----------------------------")
+
+    inputs = np.logspace(args.input_lb, args.input_ub, args.input_points)
+    inputs = [int(x) for x in inputs]
+
+    mj_model = mujoco.MjModel.from_xml_path("../xml/pendulum.xml")
+
+    mj_model.opt.solver = 1 
+    mj_model.opt.timestep = 0.01
 
     times = []
     fps_per_env = []
     total_fps = []
-    n_vals = []
 
-    for path in xml_paths:
-        n = extract_n_from_filename(path)
-        n_vals.append(n)
-
-        print(f"Executing {steps} steps on a scene with {n} object(s)")
-
-        mj_model = mujoco.MjModel.from_xml_path(path)
-
-        mj_model.opt.solver = 1 
-        mj_model.opt.timestep = 0.01
-
+    for steps in inputs:
         t, e_fps, t_fps = time_model(mj_model, steps)
-
+        
         times.append(t)
         fps_per_env.append(e_fps)
         total_fps.append(t_fps)
     
-    timing_helper.send_times_csv(n_vals, times, f"data/MJX/{n_envs}_speed.csv", f"MJX Time GPU - Batch size {n_envs} (s)",input_prefix="N")
-    timing_helper.send_times_csv(n_vals, fps_per_env, f"data/MJX/{n_envs}_env_fps.csv", f"MJX FPS GPU - Batch size {n_envs}",input_prefix="N")
-    timing_helper.send_times_csv(n_vals, total_fps, f"data/MJX/{n_envs}_total_fps.csv", f"MJX FPS GPU - Batch size {n_envs}",input_prefix="N")
-
+    timing_helper.send_times_csv(inputs, times, f"data/MJX/{n_envs}_speed.csv", f"MJX Time GPU - Batch size {n_envs} (s)")
+    timing_helper.send_times_csv(inputs, fps_per_env, f"data/MJX/{n_envs}_env_fps.csv", f"MJX FPS GPU - Batch size {n_envs}")
+    timing_helper.send_times_csv(inputs, total_fps, f"data/MJX/{n_envs}_total_fps.csv", f"MJX FPS GPU - Batch size {n_envs}")
 
 if __name__ == "__main__":
     main()
