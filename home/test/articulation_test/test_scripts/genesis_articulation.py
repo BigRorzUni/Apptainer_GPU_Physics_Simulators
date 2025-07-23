@@ -23,20 +23,21 @@ def simulate(scene, total_steps, franka):
     print()
     print("Warmup")
 
-    t = torch.linspace(0, 2 * 3.14, total_steps, device=gs.device)
-    path = 0.5 * torch.sin(t)
-
     num_batch_steps = int(total_steps / scene.n_envs)
     print(f'Num steps per Env: {num_batch_steps}')
     
     for i in range(200): 
         scene.step()
+    
+    motor_dofs = np.arange(9)
+    position = franka.get_dofs_position()
+
 
     print("Warmup done, now testing")
 
     t0 = time.perf_counter()
     for _ in range(num_batch_steps):
-
+        franka.control_dofs_position(position + torch.rand((n_envs, 9), device='cuda')*0.02, motor_dofs)
         scene.step()
     t1 = time.perf_counter()
 
@@ -64,7 +65,7 @@ def main():
     gs.init(backend=gs.gpu)
 
     scene = gs.Scene(
-        show_viewer   = True,
+        show_viewer   = False,
         rigid_options = gs.options.RigidOptions(
             dt                = 0.01,
         ),
@@ -81,7 +82,7 @@ def main():
     scene.build(n_envs)
 
     franka.control_dofs_position(
-        np.array([-1, 0.8, 1, -2, 1, 0.5, -0.5, 0.04, 0.04]),
+    torch.tile(torch.tensor([0, 0, 0, -1.0, 0, 0.5, 0, 0.02, 0.02], device=gs.device), (n_envs, 1)),
     )
 
     times = []
