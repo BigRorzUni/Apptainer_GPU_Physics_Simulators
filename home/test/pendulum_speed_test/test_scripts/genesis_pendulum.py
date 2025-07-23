@@ -62,8 +62,6 @@ def main():
         show_viewer=False,
         rigid_options=gs.options.RigidOptions(
             dt=0.01,
-            constraint_solver=gs.constraint_solver.CG, # to match mjx
-            tolerance=1e-8, # to match mjx
         ),
     )
 
