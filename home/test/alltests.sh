@@ -1,21 +1,21 @@
 #!/bin/bash
 
-cd "doing pendulum speed test"
+echo "doing pendulum speed test"
 
 cd pendulum_speed_test
 ./pendulum_speed_test.sh
 cd ..
 
-cd "now doing clutter test"
+echo "now doing clutter test"
 
 cd increasing_clutter_test
 ./increasing_clutter_test.sh
 cd ..
 
-echo "now doing articulation test"
+echo "now doing contact test"
 
-cd articulation_test
-./articulation_test.sh
+cd contacts_test
+./contacts_test.sh
 cd ..
 
 echo "tests complete"

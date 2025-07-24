@@ -16,7 +16,7 @@ parser.add_argument("input_lb", type=int, help="Lower bound of input range")
 parser.add_argument("input_ub", type=int, help="Upper bound of input range")
 parser.add_argument("input_points", type=int, help="Number of input points")
 parser.add_argument("-B", type=int, default=2048) # batch size
-parser.add_argument("--MJWarp", type=bool, help="use Mujoco style solver or not")
+parser.add_argument("--MJWarp", action="store_true", help="use Mujoco style solver or not")
 
 args = parser.parse_args()
 
@@ -60,6 +60,7 @@ class Pendulum:
         # simulate() allocates memory via a clone, so we can't use graph capture if the device does not support mempools
         self.use_cuda_graph = wp.get_device().is_cuda and wp.is_mempool_enabled(wp.get_device())
         if self.use_cuda_graph:
+            self.simulate() # warmup before capture
             with wp.ScopedCapture() as capture:
                 self.simulate()
             self.graph = capture.graph
@@ -142,13 +143,13 @@ def main():
             total_fps.append(t_fps)
 
     if use_mjwarp:
-        timing_helper.send_times_csv(inputs, times, f"data/Newton/{n_envs}_speed.csv", f"Newton (MJWarp) Time - Batch size {n_envs} (s)")
-        timing_helper.send_times_csv(inputs, fps_per_env, f"data/Newton/{n_envs}_env_fps.csv", f"Newton (MJWarp) FPS - Batch size {n_envs}")
-        timing_helper.send_times_csv(inputs, total_fps, f"data/Newton/{n_envs}_total_fps.csv", f"Newton (MJWarp) FPS - Batch size {n_envs}")
+        timing_helper.send_times_csv(inputs, times, f"data/Newton-MJWarp/{n_envs}_speed.csv", f"Newton (MJWarp) Time - Batch size {n_envs} (s)")
+        timing_helper.send_times_csv(inputs, fps_per_env, f"data/Newton-MJWarp/{n_envs}_env_fps.csv", f"Newton (MJWarp) FPS - Batch size {n_envs}")
+        timing_helper.send_times_csv(inputs, total_fps, f"data/Newton-MJWarp/{n_envs}_total_fps.csv", f"Newton (MJWarp) FPS - Batch size {n_envs}")
     else:
-        timing_helper.send_times_csv(inputs, times, f"data/Newton/{n_envs}_speed.csv", f"Newton (XPBD) Time - Batch size {n_envs} (s)")
-        timing_helper.send_times_csv(inputs, fps_per_env, f"data/Newton/{n_envs}_env_fps.csv", f"Newton (XPBD) FPS - Batch size {n_envs}")
-        timing_helper.send_times_csv(inputs, total_fps, f"data/Newton/{n_envs}_total_fps.csv", f"Newton (XPBD) FPS - Batch size {n_envs}")
+        timing_helper.send_times_csv(inputs, times, f"data/Newton-XPBD/{n_envs}_speed.csv", f"Newton (XPBD) Time - Batch size {n_envs} (s)")
+        timing_helper.send_times_csv(inputs, fps_per_env, f"data/Newton-XPBD/{n_envs}_env_fps.csv", f"Newton (XPBD) FPS - Batch size {n_envs}")
+        timing_helper.send_times_csv(inputs, total_fps, f"data/Newton-XPBD/{n_envs}_total_fps.csv", f"Newton (XPBD) FPS - Batch size {n_envs}")
 
 
 if __name__ == "__main__":
