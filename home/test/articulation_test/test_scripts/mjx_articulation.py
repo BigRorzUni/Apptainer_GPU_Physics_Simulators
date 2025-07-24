@@ -5,6 +5,8 @@ import jax
 from jax import numpy as jp
 import numpy as np
 
+jax.config.update("jax_enable_x64", False)
+
 import time
 import math
 import timing_helper 
@@ -12,7 +14,7 @@ import argparse
 
 import os
 
-parser = argparse.ArgumentParser(description="Run MJX Pendulum Simulation")
+parser = argparse.ArgumentParser(description="Run MJX Articulation Simulation")
 
 parser.add_argument("input_lb", type=int, help="Lower bound of input range")
 parser.add_argument("input_ub", type=int, help="Upper bound of input range")
@@ -52,6 +54,11 @@ def time_model(mj_model, steps):
     
     jit_step_n = jax.jit(jax.vmap(mjx_step_n, in_axes=(None, 0)), backend='gpu')
 
+    # copied from free fall script, qpos when touching ground
+    ref_pos = jp.tile(jp.array([ 0.33127472,  1.7633277 , -0.32836628, -0.23935018, -0.4920762 , 0.38396463,  0.39376438,  0.00876223,  0.03379252]), [n_envs, 1])
+
+    mjx_data = mjx_data.replace(ctrl = ref_pos)
+
     curr_step = 0
     while True:
         mjx_data = jit_step_n(mjx_model, mjx_data)
@@ -60,9 +67,12 @@ def time_model(mj_model, steps):
             break
     print("Warmup done, now testing")
 
+    rng = jax.random.PRNGKey(0)
+
     t0 = time.perf_counter()
     curr_step = 0
     while True:
+        mjx_data = mjx_data.replace(ctrl = ref_pos + jax.random.uniform(rng, shape=(n_envs, 9)) * 0.4 - 0.2)
         mjx_data = jit_step_n(mjx_model, mjx_data)
 
         curr_step += jit_steps
@@ -91,7 +101,7 @@ def main():
     inputs = np.logspace(args.input_lb, args.input_ub, args.input_points)
     inputs = [int(x) for x in inputs]
 
-    mj_model = mujoco.MjModel.from_xml_path("../xml/pendulum.xml")
+    mj_model = mujoco.MjModel.from_xml_path("../xml/franka_emika_panda/mjx_scene.xml")
 
     mj_model.opt.solver = 1 
     mj_model.opt.timestep = 0.01

@@ -25,8 +25,12 @@ def simulate(scene, total_steps, franka):
 
     num_batch_steps = int(total_steps / scene.n_envs)
     print(f'Num steps per Env: {num_batch_steps}')
+
+    franka.control_dofs_position(
+    torch.tile(torch.tensor([0, 0, 0, -1.0, 0, 0.5, 0, 0.02, 0.02], device=gs.device), (n_envs, 1)),
+    )
     
-    for i in range(200): 
+    for i in range(200):
         scene.step()
     
     motor_dofs = np.arange(9)
@@ -65,9 +69,9 @@ def main():
     gs.init(backend=gs.gpu)
 
     scene = gs.Scene(
-        show_viewer   = False,
-        rigid_options = gs.options.RigidOptions(
-            dt                = 0.01,
+        show_viewer   = True,
+        rigid_options=gs.options.RigidOptions(
+        dt=0.01,
         ),
     )
 
@@ -76,7 +80,7 @@ def main():
     )
 
     franka = scene.add_entity(
-        gs.morphs.MJCF(file='../xml/franka_emika_panda/panda.xml'),
+        gs.morphs.MJCF(file='../xml/franka_emika_panda/mjx_panda_free.xml'),
     )
     
     scene.build(n_envs)

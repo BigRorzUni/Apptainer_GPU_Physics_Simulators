@@ -10,7 +10,7 @@ import argparse
 import timing_helper
 import time
 
-parser = argparse.ArgumentParser(description="Run Newton Pendulum Simulation")
+parser = argparse.ArgumentParser(description="Run Newton Articulation Simulation")
 
 parser.add_argument("input_lb", type=int, help="Lower bound of input range")
 parser.add_argument("input_ub", type=int, help="Upper bound of input range")
@@ -21,10 +21,10 @@ args = parser.parse_args()
 
 n_envs = args.B
 
-class Pendulum:
+class Articulation:
     def __init__(self, stage_path="test.usd", num_envs=8):
         pendulum_builder = newton.ModelBuilder()
-        newton.utils.parse_mjcf("../xml/pendulum.xml", pendulum_builder)
+        newton.utils.parse_mjcf("../xml/franka_emika_panda/panda.xml", pendulum_builder)
         
         builder = newton.ModelBuilder()
 
@@ -64,6 +64,14 @@ class Pendulum:
     def simulate(self):
         self.state_0.clear_forces()
         self.contacts = self.model.collide(self.state_0)
+        
+
+        noise = wp.array([wp.random.uniform(-0.02, 0.02) for _ in range(self.model.num_controls)], dtype=float)
+        noisy_control = self.control + noise
+
+        # Update the control vector with noisy controls
+        self.control.copy_from(noisy_control)
+
         self.solver.step(self.state_0, self.state_1, self.control, self.contacts, self.sim_dt)
         self.state_0, self.state_1 = self.state_1, self.state_0
 
@@ -129,8 +137,8 @@ def main():
 
     for steps in inputs:
         with wp.ScopedDevice("cuda"):
-            pendulum_test = Pendulum(stage_path=None, num_envs=n_envs)
-            t, e_fps, t_fps = simulate_GPU(pendulum_test, steps)
+            articulation_test = Articulation(stage_path=None, num_envs=n_envs)
+            t, e_fps, t_fps = simulate_GPU(articulation_test, steps)
             
             times.append(t)
             fps_per_env.append(e_fps)

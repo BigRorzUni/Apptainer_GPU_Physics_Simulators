@@ -1,11 +1,6 @@
 # Franka Emika Panda Description (MJCF)
 
-> [!IMPORTANT]
-> Requires MuJoCo 2.3.3 or later.
-
-## Changelog
-
-See [CHANGELOG.md](./CHANGELOG.md) for a full history of changes.
+Requires MuJoCo 2.3.3 or later.
 
 ## Overview
 
@@ -44,18 +39,6 @@ description](https://github.com/frankaemika/franka_ros/tree/develop/franka_descr
 14. Added a tendon to split the force equally between both fingers and a
     position actuator acting on this tendon.
 15. Added `scene.xml` which includes the robot, with a textured groundplane, skybox, and haze.
-
-### MJX
-
-A version of the Franka Emika Panda environment was created for MJX. Steps:
-
-1. Added `mjx_panda.xml`, forked from `panda.xml`.
-2. Added `mjx_scene.xml` and `mjx_single_cube.xml`, forked from `scene.xml`.
-3. Gripper collision geometries were modified to contain less geoms. A capsule collision geom was added to the hand.
-4. Solver parameters were tuned for performance.
-5. Actuator `kp` and `kv` were reduced for more stable simulation.
-6. Added a `site` to the gripper.
-7. Removed tendon and added position actuator for the gripper. Changed gripper `ctrlrange`.
 
 ## License
 

@@ -4,13 +4,11 @@
 DATA_DIR="data"
 SCRIPT_DIR="test_scripts"
 
-XML="../../"
-
 INPUT_LB=3
 INPUT_UB=5
 INPUT_POINTS=3
 
-BATCH_SIZES=(2048 4096 8192)
+BATCH_SIZES=(1 4096 8192)
 
 print_help() {
     echo "USAGE: ./articulation_test [ENGINE_TO_TEST]"

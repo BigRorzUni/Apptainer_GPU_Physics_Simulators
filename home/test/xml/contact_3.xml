@@ -1,0 +1,25 @@
+<mujoco model="three_contacts">
+    <option gravity="0 0 -9.81" integrator="Euler" timestep="0.01"/>
+    <size njmax="30" nconmax="30"/>
+
+    <worldbody>
+        <!-- Static floor -->
+        <geom name="floor" type="plane" pos="0 0 0" size="50 50 0.1" rgba="0.2 0.2 0.2 1" condim="3"/>
+
+        <!-- Cluster of 3 overlapping spheres -->
+        <body name="sphere_0" pos="0 0 0.09">
+            <geom type="sphere" size="0.1" rgba="1 0 0 1"/>
+            <freejoint/>
+        </body>
+
+        <body name="sphere_1" pos="0.18 0 0.09">
+            <geom type="sphere" size="0.1" rgba="0 1 0 1"/>
+            <freejoint/>
+        </body>
+
+        <body name="sphere_2" pos="0.09 0.15 0.09">
+            <geom type="sphere" size="0.1" rgba="0 0 1 1"/>
+            <freejoint/>
+        </body>
+    </worldbody>
+</mujoco>

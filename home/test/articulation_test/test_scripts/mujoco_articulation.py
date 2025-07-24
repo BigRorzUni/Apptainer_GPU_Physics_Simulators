@@ -19,6 +19,10 @@ args = parser.parse_args()
 def simulate_step(model, data, num_steps, ctrl_signal=None):
     for _ in range(num_steps):
         if ctrl_signal is not None:
+            noise = np.random.uniform(low=0.0, high=0.02, size=len(ctrl_signal))
+            ctrl_signal = ctrl_signal + noise
+
+            data.ctrl[:] = 0  # reset to be safe
             data.ctrl[:] = ctrl_signal
         mujoco.mj_step(model, data)
 
@@ -29,7 +33,7 @@ def time_model(mj_model, steps):
 
     print("There are",mj_model.nu, "actuators in the franka")  # prints the number of actuators
 
-    ctrl_signal = np.array([-1, 0.8, 1, -2, 1, 0.5, -0.5, 0.04])
+    ctrl_signal = np.array([0, 0, 0, -1.0, 0, 0.5, 0, 0.02])
 
     mj_data_instances = [mujoco.MjData(mj_model) for _ in range(num_cores)]
 
@@ -71,7 +75,7 @@ def main():
     inputs = np.logspace(args.input_lb, args.input_ub, args.input_points)
     inputs = [int(x) for x in inputs]
 
-    mj_model = mujoco.MjModel.from_xml_path("../xml/franka_emika_panda/panda.xml")
+    mj_model = mujoco.MjModel.from_xml_path("../xml/franka_emika_panda/scene.xml")
 
     mj_model.opt.solver = 1 
     mj_model.opt.timestep = 0.01

@@ -1,8 +1,97 @@
 import mujoco
 import mujoco_viewer
 
+xml='''
+<?xml version='1.0' encoding='utf-8'?>
+<mujoco model="random_spheres">
+  <option timestep="0.01" gravity="0 0 -9.81" />
+  <worldbody>
+    <geom name="floor" type="plane" size="50 50 0.1" pos="0 0 0" rgba="0.8 0.8 0.8 1" />
+    <body name="sphere_0" pos="1.96 -0.37 0.1">
+      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <freejoint />
+    </body>
+    <body name="sphere_1" pos="0.82 1.90 0.1">
+      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <freejoint />
+    </body>
+    <body name="sphere_2" pos="-0.10 1.79 0.1">
+      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <freejoint />
+    </body>
+    <body name="sphere_3" pos="-1.49 0.82 0.1">
+      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <freejoint />
+    </body>
+    <body name="sphere_4" pos="0.22 -1.80 0.1">
+      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <freejoint />
+    </body>
+    <body name="sphere_5" pos="-1.42 -1.07 0.1">
+      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <freejoint />
+    </body>
+    <body name="sphere_6" pos="1.28 0.92 0.1">
+      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <freejoint />
+    </body>
+    <body name="sphere_7" pos="-0.89 -1.64 0.1">
+      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <freejoint />
+    </body>
+    <body name="sphere_8" pos="0.15 -0.70 0.1">
+      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <freejoint />
+    </body>
+    <body name="sphere_9" pos="1.55 -1.82 0.1">
+      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <freejoint />
+    </body>
+    <body name="sphere_10" pos="-1.98 0.15 0.1">
+      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <freejoint />
+    </body>
+    <body name="sphere_11" pos="0.75 -0.11 0.1">
+      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <freejoint />
+    </body>
+    <body name="sphere_12" pos="0.69 0.33 0.1">
+      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <freejoint />
+    </body>
+    <body name="sphere_13" pos="-1.19 1.15 0.1">
+      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <freejoint />
+    </body>
+    <body name="sphere_14" pos="-0.60 -0.34 0.1">
+      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <freejoint />
+    </body>
+    <body name="sphere_15" pos="1.33 -0.25 0.1">
+      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <freejoint />
+    </body>
+    <body name="sphere_16" pos="-0.84 0.89 0.1">
+      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <freejoint />
+    </body>
+    <body name="sphere_17" pos="0.28 1.15 0.1">
+      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <freejoint />
+    </body>
+    <body name="sphere_18" pos="-0.99 -1.22 0.1">
+      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <freejoint />
+    </body>
+    <body name="sphere_19" pos="0.04 -1.45 0.1">
+      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <freejoint />
+    </body>
+  </worldbody>
+</mujoco>
 
-model = mujoco.MjModel.from_xml_path("xml/Franka_emika_scenes_V1/Franka_and_cuboid.xml")
+'''
+model = mujoco.MjModel.from_xml_string(xml)
 data = mujoco.MjData(model)
 
 viewer = mujoco_viewer.MujocoViewer(model, data)

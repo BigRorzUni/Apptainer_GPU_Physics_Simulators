@@ -31,16 +31,26 @@ print_help() {
 
 run_batch_sim() {
     local sim="$1"
+    local N="$2"
     for B in "${BATCH_SIZES[@]}"
     do
         echo "Running simulation with batch size $B"
         python "$sim" $INPUT_LB $INPUT_UB $INPUT_POINTS -B "$B"
     done
+
+    if [[ "$N" == "N" ]]; then
+        echo "Rerunning with --MJWarp for $sim"
+        for B in "${BATCH_SIZES[@]}"
+        do
+            echo "Running simulation with batch size $B and --MJWarp"
+            python "$sim" $INPUT_LB $INPUT_UB $INPUT_POINTS -B "$B" --MJWarp
+        done
+    fi
 }
 
 if [[ "$#" -eq 0 ]]; then
     echo "Running test on Newton"
-    run_batch_sim test_scripts/newton_pendulum.py 
+    run_batch_sim "test_scripts/newton_pendulum.py" "N"
 
     echo "Running test on Genesis"
     run_batch_sim test_scripts/genesis_pendulum.py
@@ -58,7 +68,7 @@ fi
 case "$1" in
     Newton|newton)
         echo "Running test on Newton"
-        run_batch_sim test_scripts/newton_pendulum.py 
+        run_batch_sim "test_scripts/newton_pendulum.py" "N"
         ;;
     Genesis|genesis)
         echo "Running test on Genesis"

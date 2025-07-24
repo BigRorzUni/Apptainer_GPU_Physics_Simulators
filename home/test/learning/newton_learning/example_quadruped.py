@@ -20,11 +20,14 @@
 # from a URDF using the newton.ModelBuilder().
 # Note this example does not include a trained policy.
 #
+# Users can pick bodies by right-clicking and dragging with the mouse.
+#
 ###########################################################################
-
 
 import numpy as np
 import warp as wp
+
+wp.config.enable_backward = False
 
 import newton
 import newton.examples
@@ -44,13 +47,7 @@ class Example:
         articulation_builder.default_shape_cfg.kd = 1.0e2
         articulation_builder.default_shape_cfg.kf = 1.0e2
         articulation_builder.default_shape_cfg.mu = 1.0
-        newton.utils.parse_urdf(
-            newton.examples.get_asset("quadruped.urdf"),
-            articulation_builder,
-            xform=wp.transform([0.0, 0.0, 0.7], wp.quat_identity()),
-            floating=True,
-            enable_self_collisions=False,
-        )
+        newton.utils.parse_mjcf("../../xml/franka_emika_panda/panda.xml", articulation_builder)
         articulation_builder.joint_q[-12:] = [0.2, 0.4, -0.6, -0.2, -0.4, 0.6, -0.2, 0.4, -0.6, 0.2, -0.4, 0.6]
         articulation_builder.joint_target[-12:] = articulation_builder.joint_q[-12:]
 
@@ -90,6 +87,10 @@ class Example:
         self.control = self.model.control()
         self.contacts = self.model.collide(self.state_0)
 
+        print("Joint targets:", self.control.joint_target if self.control.joint_target is not None else None)
+        print("Joint forces:", self.control.joint_f.numpy() if self.control.joint_f is not None else None)
+
+
         newton.sim.eval_fk(self.model, self.model.joint_q, self.model.joint_qd, self.state_0)
 
         # simulate() allocates memory via a clone, so we can't use graph capture if the device does not support mempools
@@ -104,6 +105,17 @@ class Example:
     def simulate(self):
         for _ in range(self.sim_substeps):
             self.state_0.clear_forces()
+
+             # Create target positions, for example base positions + small random noise
+            base_targets = np.array([0.2, 0.4, -0.6, -0.2, -0.4, 0.6, -0.2, 0.4, -0.6, 0.2, -0.4, 0.6])
+            noise = np.random.uniform(low=-0.02, high=0.02, size=base_targets.shape)
+            new_targets = base_targets + noise
+
+            # Set the joint target positions
+            self.control.joint_target[:] = new_targets
+
+            if self.renderer and hasattr(self.renderer, "apply_picking_force"):
+                self.renderer.apply_picking_force(self.state_0)
             self.contacts = self.model.collide(self.state_0)
             self.solver.step(self.state_0, self.state_1, self.control, self.contacts, self.sim_dt)
             self.state_0, self.state_1 = self.state_1, self.state_0
@@ -123,7 +135,7 @@ class Example:
         with wp.ScopedTimer("render"):
             self.renderer.begin_frame(self.sim_time)
             self.renderer.render(self.state_0)
-            self.renderer.render_contacts(self.state_0, self.contacts, contact_point_radius=1e-2)
+            self.renderer.render_contacts(self.state_0.body_q, self.contacts, contact_point_radius=1e-2)
             self.renderer.end_frame()
 
 
@@ -133,13 +145,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("--device", type=str, default=None, help="Override the default Warp device.")
     parser.add_argument(
-        "--stage_path",
+        "--stage-path",
         type=lambda x: None if x == "None" else str(x),
         default="example_quadruped.usd",
         help="Path to the output USD file.",
     )
-    parser.add_argument("--num_frames", type=int, default=30000, help="Total number of frames.")
-    parser.add_argument("--num_envs", type=int, default=100, help="Total number of simulated environments.")
+    parser.add_argument("--num-frames", type=int, default=30000, help="Total number of frames.")
+    parser.add_argument("--num-envs", type=int, default=100, help="Total number of simulated environments.")
 
     args = parser.parse_known_args()[0]
 
@@ -148,7 +160,7 @@ if __name__ == "__main__":
 
         for _ in range(args.num_frames):
             example.step()
-            example.render()
+            #example.render()
 
         if example.renderer:
             example.renderer.save()
