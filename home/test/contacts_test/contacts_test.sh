@@ -62,8 +62,8 @@ case "$1" in
 esac
 
 
-STEPS=$(awk 'BEGIN {printf "%d\n", 1e3}') 
-SPHERE_COUNTS=(1 5 7)
+STEPS=$(awk 'BEGIN {printf "%d\n", 1e6}') 
+SPHERE_COUNTS=(1 5 7 10)
 
 
 XML_PATHS=()
