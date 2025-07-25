@@ -48,24 +48,6 @@ jnt_names = [
 ]
 dofs_idx = [franka.get_joint(name).dof_idx_local for name in jnt_names]
 
-############ Optional: set control gains ############
-# set positional gains
-franka.set_dofs_kp(
-    kp             = np.array([4500, 4500, 3500, 3500, 2000, 2000, 2000, 100, 100]),
-    dofs_idx_local = dofs_idx,
-)
-# set velocity gains
-franka.set_dofs_kv(
-    kv             = np.array([450, 450, 350, 350, 200, 200, 200, 10, 10]),
-    dofs_idx_local = dofs_idx,
-)
-# set force range for safety
-franka.set_dofs_force_range(
-    lower          = np.array([-87, -87, -87, -87, -12, -12, -12, -100, -100]),
-    upper          = np.array([ 87,  87,  87,  87,  12,  12,  12,  100,  100]),
-    dofs_idx_local = dofs_idx,
-)
-
 print(dofs_idx)
 
 # PD control

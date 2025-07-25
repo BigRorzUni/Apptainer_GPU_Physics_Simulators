@@ -88,6 +88,7 @@ def main():
     franka.control_dofs_position(
     torch.tile(torch.tensor([0, 0, 0, -1.0, 0, 0.5, 0, 0.02, 0.02], device=gs.device), (n_envs, 1)),
     )
+    
 
     times = []
     fps_per_env = []

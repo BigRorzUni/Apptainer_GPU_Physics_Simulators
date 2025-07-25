@@ -51,6 +51,18 @@ class Example:
         articulation_builder.joint_q[-12:] = [0.2, 0.4, -0.6, -0.2, -0.4, 0.6, -0.2, 0.4, -0.6, 0.2, -0.4, 0.6]
         articulation_builder.joint_target[-12:] = articulation_builder.joint_q[-12:]
 
+        jnt_names = [
+            'joint1',
+            'joint2',
+            'joint3',
+            'joint4',
+            'joint5',
+            'joint6',
+            'joint7',
+            'finger_joint1',
+            'finger_joint2',
+        ]
+
         builder = newton.ModelBuilder()
 
         self.sim_time = 0.0
@@ -60,7 +72,7 @@ class Example:
         self.sim_substeps = 10
         self.sim_dt = self.frame_dt / self.sim_substeps
 
-        self.num_envs = num_envs
+        self.num_envs = 1
 
         offsets = newton.examples.compute_env_offsets(self.num_envs)
         for i in range(self.num_envs):
@@ -89,8 +101,11 @@ class Example:
 
         print("Joint targets:", self.control.joint_target if self.control.joint_target is not None else None)
         print("Joint forces:", self.control.joint_f.numpy() if self.control.joint_f is not None else None)
-
-
+        print(self.model.joint_dof_count)
+        signals = [0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2]
+        #self.control.joint_target = wp.array(signals, dtype=float)
+        #print("Joint targets:", self.control.joint_target if self.control.joint_target is not None else None)
+    
         newton.sim.eval_fk(self.model, self.model.joint_q, self.model.joint_qd, self.state_0)
 
         # simulate() allocates memory via a clone, so we can't use graph capture if the device does not support mempools
@@ -107,12 +122,12 @@ class Example:
             self.state_0.clear_forces()
 
              # Create target positions, for example base positions + small random noise
-            base_targets = np.array([0.2, 0.4, -0.6, -0.2, -0.4, 0.6, -0.2, 0.4, -0.6, 0.2, -0.4, 0.6])
+            base_targets = np.array([0.2, 0.4, 0.6, 0.2, 0.4, 0.6, 0.2, 0.4, 0.6, 0.2, 0.4, 0.6])
             noise = np.random.uniform(low=-0.02, high=0.02, size=base_targets.shape)
             new_targets = base_targets + noise
 
             # Set the joint target positions
-            self.control.joint_target[:] = new_targets
+            self.control.joint_target = wp.array(new_targets, dtype=float)
 
             if self.renderer and hasattr(self.renderer, "apply_picking_force"):
                 self.renderer.apply_picking_force(self.state_0)
@@ -160,7 +175,7 @@ if __name__ == "__main__":
 
         for _ in range(args.num_frames):
             example.step()
-            #example.render()
+            example.render()
 
         if example.renderer:
             example.renderer.save()

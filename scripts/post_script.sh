@@ -23,6 +23,8 @@ wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | te
 sh -c 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
 apt-get update && apt-get install -y code
 
+apt-get install python3-tk
+
 # --------------- Install CuDa / nvcc ----------------
 # Base installer
 wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-ubuntu2404.pin

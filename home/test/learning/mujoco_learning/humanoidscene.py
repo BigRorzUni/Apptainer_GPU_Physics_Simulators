@@ -6,9 +6,6 @@ import time
 import itertools
 import numpy as np
 import matplotlib.pyplot as plt
-
-import mediapy as media
-
 # Get MuJoCo's standard humanoid model.
 print('Getting MuJoCo humanoid XML description from GitHub:')
 with open('mujoco/model/humanoid/humanoid.xml', 'r') as f:

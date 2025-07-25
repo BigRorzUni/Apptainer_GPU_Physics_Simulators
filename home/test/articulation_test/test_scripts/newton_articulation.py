@@ -74,6 +74,22 @@ class Articulation:
 
         self.solver.step(self.state_0, self.state_1, self.control, self.contacts, self.sim_dt)
         self.state_0, self.state_1 = self.state_1, self.state_0
+    
+    def simulate(self):
+        self.state_0.clear_forces()
+
+        # Create target positions, for example base positions + small random noise
+        base_targets = np.array([0.2, 0.4, -0.6, -0.2, -0.4, 0.6, -0.2, 0.4, -0.6, 0.2, -0.4, 0.6])
+        noise = np.random.uniform(low=-0.02, high=0.02, size=base_targets.shape)
+        new_targets = base_targets + noise
+
+        # Set the joint target positions
+        self.control.joint_target = wp.array(new_targets, dtype=float)
+
+        self.contacts = self.model.collide(self.state_0)
+        self.solver.step(self.state_0, self.state_1, self.control, self.contacts, self.sim_dt)
+        self.state_0, self.state_1 = self.state_1, self.state_0
+
 
     def step(self):
         if self.use_cuda_graph:
