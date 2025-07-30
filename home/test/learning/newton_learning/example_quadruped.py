@@ -72,7 +72,7 @@ class Example:
         self.sim_substeps = 10
         self.sim_dt = self.frame_dt / self.sim_substeps
 
-        self.num_envs = 1
+        self.num_envs = num_envs
 
         offsets = newton.examples.compute_env_offsets(self.num_envs)
         for i in range(self.num_envs):
@@ -102,9 +102,7 @@ class Example:
         print("Joint targets:", self.control.joint_target if self.control.joint_target is not None else None)
         print("Joint forces:", self.control.joint_f.numpy() if self.control.joint_f is not None else None)
         print(self.model.joint_dof_count)
-        signals = [0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2]
-        #self.control.joint_target = wp.array(signals, dtype=float)
-        #print("Joint targets:", self.control.joint_target if self.control.joint_target is not None else None)
+
     
         newton.sim.eval_fk(self.model, self.model.joint_q, self.model.joint_qd, self.state_0)
 
@@ -118,40 +116,37 @@ class Example:
             self.graph = None
 
     def simulate(self):
-        for _ in range(self.sim_substeps):
-            self.state_0.clear_forces()
+        self.state_0.clear_forces()
 
-             # Create target positions, for example base positions + small random noise
-            base_targets = np.array([0.2, 0.4, 0.6, 0.2, 0.4, 0.6, 0.2, 0.4, 0.6, 0.2, 0.4, 0.6])
-            noise = np.random.uniform(low=-0.02, high=0.02, size=base_targets.shape)
-            new_targets = base_targets + noise
+        # Create target positions, for example base positions + small random noise
+        base_targets = np.array([0.2, 0.4, -0.6, -0.2, -0.4, 0.6, -0.2, 0.4, -0.6, 0.2, -0.4, 0.6])
+        noise = np.random.uniform(low=-0.5, high=0.5, size=base_targets.shape)
+        new_targets = base_targets + noise
 
-            # Set the joint target positions
-            self.control.joint_target = wp.array(new_targets, dtype=float)
+        # Set the joint target positions
+        self.control.joint_target = wp.array(new_targets, dtype=float)
 
-            if self.renderer and hasattr(self.renderer, "apply_picking_force"):
-                self.renderer.apply_picking_force(self.state_0)
-            self.contacts = self.model.collide(self.state_0)
-            self.solver.step(self.state_0, self.state_1, self.control, self.contacts, self.sim_dt)
-            self.state_0, self.state_1 = self.state_1, self.state_0
+        self.contacts = self.model.collide(self.state_0)
+        self.solver.step(self.state_0, self.state_1, self.control, self.contacts, self.sim_dt)
+        self.state_0, self.state_1 = self.state_1, self.state_0
 
     def step(self):
-        with wp.ScopedTimer("step"):
-            if self.use_cuda_graph:
-                wp.capture_launch(self.graph)
-            else:
-                self.simulate()
+        #with wp.ScopedTimer("step"):
+        if self.use_cuda_graph:
+            wp.capture_launch(self.graph)
+        else:
+            self.simulate()
         self.sim_time += self.frame_dt
 
     def render(self):
         if self.renderer is None:
             return
 
-        with wp.ScopedTimer("render"):
-            self.renderer.begin_frame(self.sim_time)
-            self.renderer.render(self.state_0)
-            self.renderer.render_contacts(self.state_0.body_q, self.contacts, contact_point_radius=1e-2)
-            self.renderer.end_frame()
+        #with wp.ScopedTimer("render"):
+        self.renderer.begin_frame(self.sim_time)
+        self.renderer.render(self.state_0)
+        self.renderer.render_contacts(self.state_0.body_q, self.contacts, contact_point_radius=1e-2)
+        self.renderer.end_frame()
 
 
 if __name__ == "__main__":
