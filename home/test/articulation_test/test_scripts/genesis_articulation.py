@@ -69,7 +69,7 @@ def main():
     gs.init(backend=gs.gpu)
 
     scene = gs.Scene(
-        show_viewer   = True,
+        show_viewer   = False,
         rigid_options=gs.options.RigidOptions(
         dt=0.01,
         ),
