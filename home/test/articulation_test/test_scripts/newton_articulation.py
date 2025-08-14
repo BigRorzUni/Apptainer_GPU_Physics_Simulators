@@ -16,9 +16,13 @@ parser.add_argument("input_lb", type=int, help="Lower bound of input range")
 parser.add_argument("input_ub", type=int, help="Upper bound of input range")
 parser.add_argument("input_points", type=int, help="Number of input points")
 parser.add_argument("-B", type=int, default=2048) # batch size
+parser.add_argument("--MJWarp", action="store_true", help="use Mujoco solver or not")
+parser.add_argument("--Featherstone", action="store_true", help="use Featherstone solver or not")
 
 args = parser.parse_args()
 
+use_mjwarp = args.MJWarp
+use_featherstone = args.Featherstone
 n_envs = args.B
 
 class Articulation:
@@ -38,7 +42,12 @@ class Articulation:
 
         # finalize model
         self.model = builder.finalize()
-        self.solver = newton.solvers.XPBDSolver(self.model)
+        if use_mjwarp:
+            self.solver = newton.solvers.MuJoCoSolver(self.model)
+        elif use_featherstone:
+            self.solver = newton.solvers.FeatherstoneSolver(self.model)
+        else:
+            self.solver = newton.solvers.XPBDSolver(self.model)
 
         if stage_path:
             self.renderer = newton.utils.SimRendererOpenGL(self.model, stage_path)
@@ -159,10 +168,20 @@ def main():
             times.append(t)
             fps_per_env.append(e_fps)
             total_fps.append(t_fps)
+            
+    if use_mjwarp:
+        timing_helper.send_times_csv(inputs, times, f"data/Newton-MJWarp/{n_envs}_speed.csv", f"Newton (MJWarp) Time - Batch size {n_envs} (s)")
+        timing_helper.send_times_csv(inputs, fps_per_env, f"data/Newton-MJWarp/{n_envs}_env_fps.csv", f"Newton (MJWarp) FPS - Batch size {n_envs}")
+        timing_helper.send_times_csv(inputs, total_fps, f"data/Newton-MJWarp/{n_envs}_total_fps.csv", f"Newton (MJWarp) FPS - Batch size {n_envs}")
+    elif use_featherstone:
+        timing_helper.send_times_csv(inputs, times, f"data/Newton-Featherstone/{n_envs}_speed.csv", f"Newton (Featherstone) Time - Batch size {n_envs} (s)")
+        timing_helper.send_times_csv(inputs, fps_per_env, f"data/Newton-Featherstone/{n_envs}_env_fps.csv", f"Newton (Featherstone) FPS - Batch size {n_envs}")
+        timing_helper.send_times_csv(inputs, total_fps, f"data/Newton-Featherstone/{n_envs}_total_fps.csv", f"Newton (Featherstone) FPS - Batch size {n_envs}")  
+    else:
+        timing_helper.send_times_csv(inputs, times, f"data/Newton-XPBD/{n_envs}_speed.csv", f"Newton (XPBD) Time - Batch size {n_envs} (s)")
+        timing_helper.send_times_csv(inputs, fps_per_env, f"data/Newton-XPBD/{n_envs}_env_fps.csv", f"Newton (XPBD) FPS - Batch size {n_envs}")
+        timing_helper.send_times_csv(inputs, total_fps, f"data/Newton-XPBD/{n_envs}_total_fps.csv", f"Newton (XPBD) FPS - Batch size {n_envs}")
 
-    timing_helper.send_times_csv(inputs, times, f"data/Newton/{n_envs}_speed.csv", f"Newton Time GPU - Batch size {n_envs} (s)")
-    timing_helper.send_times_csv(inputs, fps_per_env, f"data/Newton/{n_envs}_env_fps.csv", f"Newton FPS GPU - Batch size {n_envs}")
-    timing_helper.send_times_csv(inputs, total_fps, f"data/Newton/{n_envs}_total_fps.csv", f"Newton FPS GPU - Batch size {n_envs}")
 
 
 if __name__ == "__main__":

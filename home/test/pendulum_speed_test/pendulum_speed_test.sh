@@ -39,12 +39,21 @@ run_batch_sim() {
     done
 
     if [[ "$N" == "N" ]]; then
+        echo "Rerunning with --Featherstone for $sim"
+        for B in "${BATCH_SIZES[@]}"
+        do
+            echo "Running simulation with batch size $B and --Featherstone"
+            python "$sim" $INPUT_LB $INPUT_UB $INPUT_POINTS -B "$B" --Featherstone
+        done
+
         echo "Rerunning with --MJWarp for $sim"
         for B in "${BATCH_SIZES[@]}"
         do
             echo "Running simulation with batch size $B and --MJWarp"
             python "$sim" $INPUT_LB $INPUT_UB $INPUT_POINTS -B "$B" --MJWarp
         done
+
+        
     fi
 }
 
