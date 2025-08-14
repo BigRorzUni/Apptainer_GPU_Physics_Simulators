@@ -70,19 +70,7 @@ class Articulation:
         else:
             self.graph = None
 
-    def simulate(self):
-        self.state_0.clear_forces()
-        self.contacts = self.model.collide(self.state_0)
-        
-
-        noise = wp.array([wp.random.uniform(-0.02, 0.02) for _ in range(self.model.num_controls)], dtype=float)
-        noisy_control = self.control + noise
-
-        # Update the control vector with noisy controls
-        self.control.copy_from(noisy_control)
-
-        self.solver.step(self.state_0, self.state_1, self.control, self.contacts, self.sim_dt)
-        self.state_0, self.state_1 = self.state_1, self.state_0
+    
     
     def simulate(self):
         self.state_0.clear_forces()
