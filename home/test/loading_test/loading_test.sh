@@ -11,7 +11,7 @@ INPUT_POINTS=5
 BATCH_SIZES=(2048 4096 8192)
 
 print_help() {
-    echo "USAGE: ./articulation_test [ENGINE_TO_TEST]"
+    echo "USAGE: ./loading_test [ENGINE_TO_TEST]"
     echo ""
     echo "PARAMETERS:"
     echo "  ENGINE_TO_TEST:  ALL (DEFAULT) - runs all physics engines tests (Newton, Genesis, Mujoco & MJX)"
@@ -19,7 +19,7 @@ print_help() {
     echo "                   Genesis - runs only Genesis test"
     echo "                   Mujoco or MJX - runs only Mujoco & MJX tests"
     echo ""
-    echo "USAGE: ./articulation_test SPECIAL_MODE [OUTPUT_IMAGE]"
+    echo "USAGE: ./loading_test SPECIAL_MODE [OUTPUT_IMAGE]"
     echo "SPECIAL MODES:"
     echo "  HELP               Print this help message"
     echo "  PLOT [output.png]  Plot results and save to output image file."
@@ -29,44 +29,25 @@ print_help() {
 
 run_batch_sim() {
     local sim="$1"
-    local N="$2"
     for B in "${BATCH_SIZES[@]}"
     do
         echo "Running simulation with batch size $B"
         python "$sim" -B "$B"
     done
-
-    if [[ "$N" == "N" ]]; then
-        echo "Rerunning with --Featherstone for $sim"
-        for B in "${BATCH_SIZES[@]}"
-        do
-            echo "Running simulation with batch size $B and --Featherstone"
-            python "$sim" $INPUT_LB $INPUT_UB $INPUT_POINTS -B "$B" --Featherstone
-        done
-
-        echo "Rerunning with --MJWarp for $sim"
-        for B in "${BATCH_SIZES[@]}"
-        do
-            echo "Running simulation with batch size $B and --MJWarp"
-            python "$sim" $INPUT_LB $INPUT_UB $INPUT_POINTS -B "$B" --MJWarp
-        done
-
-        
-    fi
 }
 
 if [[ "$#" -eq 0 ]]; then
     echo "Running test on Newton"
-    run_batch_sim test_scripts/newton_articulation.py "N"
+    run_batch_sim test_scripts/newton_loading.py "N"
 
     echo "Running test on Genesis"
     run_batch_sim test_scripts/genesis_loading.py
 
     echo "Running test on Mujoco"
-    python test_scripts/mujoco_articulation.py $INPUT_LB $INPUT_UB $INPUT_POINTS
+    python test_scripts/mujoco_loading.py 
 
     echo "Running test on MJX"
-    run_batch_sim "test_scripts/mjx_articulation.py"
+    run_batch_sim "test_scripts/mjx_loading.py"
 
     exit 0
 fi
@@ -75,7 +56,7 @@ fi
 case "$1" in
     Newton|newton)
         echo "Running test on Newton"
-        run_batch_sim test_scripts/newton_articulation.py "N"
+        run_batch_sim test_scripts/newton_loading.py 
         ;;
     Genesis|genesis)
         echo "Running test on Genesis"
@@ -83,11 +64,11 @@ case "$1" in
         ;;
     Mujoco|mujoco)
         echo "Running test on Mujoco"
-        python test_scripts/mujoco_articulation.py $INPUT_LB $INPUT_UB $INPUT_POINTS
+        run_batch_sim test_scripts/mujoco_loading.py
         ;;
     MJX|mjx)
         echo "Running test on MJX"
-        run_batch_sim "test_scripts/mjx_articulation.py"
+        run_batch_sim "test_scripts/mjx_loading.py"
         ;;
     HELP|help)
         print_help
@@ -142,7 +123,7 @@ case "$1" in
 
         echo "Plotting results for simulators: ${SIMULATORS:-all}, file_type: $FILE_TYPE, batch_size: ${BATCH_SIZE_VAL:-all}"
 
-        python plot_timings.py $SIMULATORS_ARG --base_dir "../articulation_test/data" --file_type "$FILE_TYPE" $BATCH_SIZE
+        python plot_timings.py $SIMULATORS_ARG --base_dir "../loading_test/data" --file_type "$FILE_TYPE" $BATCH_SIZE
         ;;
 
 esac

@@ -24,7 +24,7 @@ n_envs = args.B
 
 
 def main():
-    N_TRIALS = 10
+    N_TRIALS = 100
 
     print("Starting environment load + memory benchmark")
     
@@ -72,6 +72,9 @@ def main():
         
     print(sum(avg_times) / N_TRIALS)
     print(sum(avg_mem_per_env) / N_TRIALS)
+
+    timing_helper.send_loading_times_csv(avg_times, avg_mem_per_env, f"data/Genesis/{n_envs}_load_info.csv")
+
     
 if __name__ == "__main__":
     main()

@@ -31,6 +31,27 @@ def send_times_csv(inputs, times, fname, label_prefix, batch_sizes=None, input_p
 
     print(f"Timing data written to {fname}")
 
+
+def send_loading_times_csv(load_times, mem_per_env, fname):
+    """
+    Writes Genesis environment loading data to a CSV file, without including the environment counts.
+
+    Parameters:
+    - load_times: list of lists of average load times (or single list)
+    - mem_per_env: list of lists of average memory per environment (or single list)
+    - fname: output CSV filename
+    - batch_sizes: list of batch sizes if applicable, or None
+    """
+
+    data = {}
+
+    data["Load Time (s)"] = load_times
+    data["Memory per Env (MB)"] = mem_per_env
+
+    df = pd.DataFrame(data)
+    df.to_csv(fname, index=False)
+    print(f"Loading times and memory data written to {fname}")
+
 def read_timing_csv(fname):
     df = pd.read_csv(fname)
     return df
