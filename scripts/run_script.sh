@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ ! -d "$HOME/NewtonMPC" ]; then
+if [ ! -d "$HOME/newton" ]; then
     # MPC
     git clone git@github.com:BigRorzUni/NewtonMPC.git
 
