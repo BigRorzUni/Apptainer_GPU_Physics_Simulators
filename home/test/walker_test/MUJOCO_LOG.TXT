@@ -1,0 +1,48 @@
+Thu Aug 14 14:08:32 2025
+WARNING: Nan, Inf or huge value in QPOS at DOF 0. The simulation is unstable. Time = 45152.3700.
+
+Thu Aug 14 14:08:32 2025
+WARNING: Nan, Inf or huge value in QPOS at DOF 0. The simulation is unstable. Time = 45152.3700.
+
+Thu Aug 14 14:08:32 2025
+WARNING: Nan, Inf or huge value in QPOS at DOF 0. The simulation is unstable. Time = 45152.3700.
+
+Thu Aug 14 14:08:34 2025
+WARNING: Nan, Inf or huge value in QPOS at DOF 0. The simulation is unstable. Time = 45152.3700.
+
+Thu Aug 14 14:08:34 2025
+WARNING: Nan, Inf or huge value in QPOS at DOF 0. The simulation is unstable. Time = 45152.3700.
+
+Thu Aug 14 14:08:34 2025
+WARNING: Nan, Inf or huge value in QPOS at DOF 0. The simulation is unstable. Time = 45152.3700.
+
+Thu Aug 14 14:08:34 2025
+WARNING: Nan, Inf or huge value in QPOS at DOF 0. The simulation is unstable. Time = 45152.3700.
+
+Thu Aug 14 14:08:35 2025
+WARNING: Nan, Inf or huge value in QPOS at DOF 0. The simulation is unstable. Time = 45152.3700.
+
+Thu Aug 14 14:08:35 2025
+WARNING: Nan, Inf or huge value in QPOS at DOF 0. The simulation is unstable. Time = 45152.3700.
+
+Thu Aug 14 14:08:35 2025
+WARNING: Nan, Inf or huge value in QPOS at DOF 0. The simulation is unstable. Time = 45152.3700.
+
+Thu Aug 14 14:08:35 2025
+WARNING: Nan, Inf or huge value in QPOS at DOF 0. The simulation is unstable. Time = 45152.3700.
+
+Thu Aug 14 14:08:36 2025
+WARNING: Nan, Inf or huge value in QPOS at DOF 0. The simulation is unstable. Time = 45152.3700.
+
+Thu Aug 14 14:08:36 2025
+WARNING: Nan, Inf or huge value in QPOS at DOF 0. The simulation is unstable. Time = 45152.3700.
+
+Thu Aug 14 14:08:36 2025
+WARNING: Nan, Inf or huge value in QPOS at DOF 0. The simulation is unstable. Time = 45152.3700.
+
+Thu Aug 14 14:08:37 2025
+WARNING: Nan, Inf or huge value in QPOS at DOF 0. The simulation is unstable. Time = 45152.3700.
+
+Thu Aug 14 14:08:39 2025
+WARNING: Nan, Inf or huge value in QPOS at DOF 0. The simulation is unstable. Time = 45152.3700.
+

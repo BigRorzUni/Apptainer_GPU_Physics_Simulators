@@ -18,4 +18,12 @@ cd contacts_test
 ./contacts_test.sh
 cd ..
 
+cd articulation_test
+./articulation_test.sh
+cd ..
+
+cd walker_test
+./walker_test.sh
+cd ..
+
 echo "tests complete"
