@@ -74,8 +74,8 @@ MJWarp is a warp-based solver inspired by MuJoCo, designed to take advantage of 
 \subsection{Metrics}
 \begin{itemize}
     \item Time to complete simulation (seconds)
-    \item FPS per environment
-    \item Total FPS across all environments
+    \item Memory used per environment (MB)
+    \item Time taken to load the simulation (seconds)
 \end{itemize}
 
 \section{Tests}
@@ -109,7 +109,7 @@ We use a simple pendulum model to test a simple case of articulation. The pendul
 \subsection{Increasing Clutter Test}
 In this test we increased the amount of objects in the scene from 1,5,10 and 20. The objects do not collide with anything and just fall under gravity. It is run for a fixed number of steps
 
-\begin{lstlisting}[style=xmlstyle, caption={Pendulum XML model}, label=lst:pendulum_xml]
+\begin{lstlisting}[style=xmlstyle, caption={Cluttered XML model}, label=lst:cluttered_xml]
 <mujoco model="random_spheres">
   <option timestep="0.01" gravity="0 0 -9.81" />
   <worldbody>
@@ -138,10 +138,22 @@ In this test we increased the amount of objects in the scene from 1,5,10 and 20.
 </mujoco>
 \end{lstlisting}
 
+\subsubsection{Test Parameters}
+\begin{itemize}
+    \item \textbf{Time step:} 0.01s
+    \item \textbf{Batch sizes:} 
+    \begin{itemize}
+        \item CPU: 8 cores 
+        \item GPU: 2048, 4096, 8192
+    \end{itemize}
+    \item \textbf{Number of simulation steps:} $10^6$
+    \item \textbf{Number of objects:} 1, 5, 10, 20
+\end{itemize}
+
 \subsection{Increasing Contacts Test}
 In this test we increased the number of overlapping spheres to see how each solver handles the increasing amount of contacts to resolve. Upon reflection this test is not quite as useful as it could be as once the contact is resolved the spheres do not collide again. Changing this to continually move the spheres into contact would be a better test.
 
-\begin{lstlisting}[style=xmlstyle, caption={Pendulum XML model}, label=lst:pendulum_xml]
+\begin{lstlisting}[style=xmlstyle, caption={Contacts XML model}, label=lst:contacts_xml]
 <mujoco model="five_contacts">
     <option gravity="0 0 -9.81" integrator="Euler" timestep="0.01"/>
     <size njmax="50" nconmax="50"/>
@@ -188,19 +200,7 @@ In this test we increased the number of overlapping spheres to see how each solv
         \item GPU: 2048, 4096, 8192
     \end{itemize}
     \item \textbf{Number of simulation steps:} $10^6$
-    \item \textbf{Number of objects in contacts:} 1, 5, 7, 1s0
-\end{itemize}
-
-\subsubsection{Test Parameters}
-\begin{itemize}
-    \item \textbf{Time step:} 0.01s
-    \item \textbf{Batch sizes:} 
-    \begin{itemize}
-        \item CPU: 8 cores 
-        \item GPU: 2048, 4096, 8192
-    \end{itemize}
-    \item \textbf{Number of simulation steps:} $10^6$
-    \item \textbf{Number of objects:} 1, 5, 10, 20
+    \item \textbf{Number of objects in contacts:} 1, 5, 7, 10
 \end{itemize}
 
 \subsection{Articulation Test}
@@ -314,19 +314,34 @@ Here we see that XPBD was by far faster than Genesis, but to reiterate it seems 
 \subsection{Walker Test}
 \begin{figure}[H]
     \centering
-    %\includegraphics[width=\textwidth]{home/figures/articulation_speed.png}
-    %\caption{Articulation Test: Simulation speed comparison across physics engines.}
-    %\label{fig:articulation_speed_comparison}
+    \includegraphics[width=\textwidth]{home/figures/walker_speed.png}
+    \caption{Walker Test: Simulation speed comparison across physics engines.}
+    \label{fig:walker_speed_comparison}
 \end{figure}
 
 \subsubsection{Comments:}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{home/figures/walker_genesis-xpbd_speed.png}
+    \caption{Walker Test: Close-up simulation speed comparison for XPBD and Genesis.}
+    \label{fig:walker_speed_comparison_xpbd_genesis}
+\end{figure}
+
+
+
 \subsection{Loading Times Test}
 \begin{figure}[H]
     \centering
-    %\includegraphics[width=\textwidth]{home/figures/articulation_speed.png}
-    %\caption{Articulation Test: Simulation speed comparison across physics engines.}
-    %\label{fig:articulation_speed_comparison}
+    \includegraphics[width=\textwidth]{home/figures/loadingspeed_comparison.png}
+    \caption{Loading Test: Loading speed comparison across physics engines.}
+    \label{fig:loading_speed_comparison}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{home/figures/memoryuse_comparison.png}
+    \caption{Loading Test: Memory usage comparison across physics engines.}
+    \label{fig:memory_usage_comparison}
 \end{figure}
 
 \subsubsection{Comments:}
