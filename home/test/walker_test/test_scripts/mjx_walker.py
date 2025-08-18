@@ -54,7 +54,6 @@ def time_model(mj_model, steps):
     
     jit_step_n = jax.jit(jax.vmap(mjx_step_n, in_axes=(None, 0)), backend='gpu')
 
-    # copied from free fall script, qpos when touching ground
     ref_pos = jp.tile(jp.array([ 0.33127472,  1.7633277 , -0.32836628, -0.23935018, -0.4920762 , 0.38396463,]), [n_envs, 1])
 
     mjx_data = mjx_data.replace(ctrl = ref_pos)
