@@ -13,9 +13,6 @@ def generate_random_spheres_xml(n=10):
     # Worldbody
     worldbody = ET.SubElement(mjcf, "worldbody")
 
-    # Add a static ground plane
-    ET.SubElement(worldbody, "geom", name="floor", type="plane", size="50 50 0.1", pos="0 0 0", rgba="0.8 0.8 0.8 1")
-
     # Add n spheres
     for i in range(n):
         x, y = np.random.uniform(-2, 2), np.random.uniform(-2, 2)

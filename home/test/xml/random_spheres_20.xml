@@ -2,85 +2,86 @@
 <mujoco model="random_spheres">
   <option timestep="0.01" gravity="0 0 -9.81" />
   <worldbody>
-    <geom name="floor" type="plane" size="50 50 0.1" pos="0 0 0" rgba="0.8 0.8 0.8 1" />
+    <geom name="floor" type="plane" size="50 50 0.1" pos="0 0 100" rgba="0.8 0.8 0.8 1" />
+
     <body name="sphere_0" pos="1.96 -0.37 0.1">
-      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <geom type="sphere" size="0.1" rgba="0.91 0.27 0.38 1" />
       <freejoint />
     </body>
     <body name="sphere_1" pos="0.82 1.90 0.1">
-      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <geom type="sphere" size="0.1" rgba="0.24 0.78 0.12 1" />
       <freejoint />
     </body>
     <body name="sphere_2" pos="-0.10 1.79 0.1">
-      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <geom type="sphere" size="0.1" rgba="0.12 0.65 0.95 1" />
       <freejoint />
     </body>
     <body name="sphere_3" pos="-1.49 0.82 0.1">
-      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <geom type="sphere" size="0.1" rgba="0.87 0.43 0.21 1" />
       <freejoint />
     </body>
     <body name="sphere_4" pos="0.22 -1.80 0.1">
-      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <geom type="sphere" size="0.1" rgba="0.36 0.14 0.89 1" />
       <freejoint />
     </body>
     <body name="sphere_5" pos="-1.42 -1.07 0.1">
-      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <geom type="sphere" size="0.1" rgba="0.91 0.86 0.11 1" />
       <freejoint />
     </body>
     <body name="sphere_6" pos="1.28 0.92 0.1">
-      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <geom type="sphere" size="0.1" rgba="0.17 0.84 0.66 1" />
       <freejoint />
     </body>
     <body name="sphere_7" pos="-0.89 -1.64 0.1">
-      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <geom type="sphere" size="0.1" rgba="0.94 0.25 0.74 1" />
       <freejoint />
     </body>
     <body name="sphere_8" pos="0.15 -0.70 0.1">
-      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <geom type="sphere" size="0.1" rgba="0.22 0.96 0.18 1" />
       <freejoint />
     </body>
     <body name="sphere_9" pos="1.55 -1.82 0.1">
-      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <geom type="sphere" size="0.1" rgba="0.59 0.41 0.94 1" />
       <freejoint />
     </body>
     <body name="sphere_10" pos="-1.98 0.15 0.1">
-      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <geom type="sphere" size="0.1" rgba="0.94 0.56 0.11 1" />
       <freejoint />
     </body>
     <body name="sphere_11" pos="0.75 -0.11 0.1">
-      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <geom type="sphere" size="0.1" rgba="0.10 0.88 0.57 1" />
       <freejoint />
     </body>
     <body name="sphere_12" pos="0.69 0.33 0.1">
-      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <geom type="sphere" size="0.1" rgba="0.83 0.23 0.99 1" />
       <freejoint />
     </body>
     <body name="sphere_13" pos="-1.19 1.15 0.1">
-      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <geom type="sphere" size="0.1" rgba="0.29 0.91 0.23 1" />
       <freejoint />
     </body>
     <body name="sphere_14" pos="-0.60 -0.34 0.1">
-      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <geom type="sphere" size="0.1" rgba="0.96 0.41 0.19 1" />
       <freejoint />
     </body>
     <body name="sphere_15" pos="1.33 -0.25 0.1">
-      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <geom type="sphere" size="0.1" rgba="0.12 0.69 0.96 1" />
       <freejoint />
     </body>
     <body name="sphere_16" pos="-0.84 0.89 0.1">
-      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <geom type="sphere" size="0.1" rgba="0.87 0.18 0.32 1" />
       <freejoint />
     </body>
     <body name="sphere_17" pos="0.28 1.15 0.1">
-      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <geom type="sphere" size="0.1" rgba="0.48 0.91 0.13 1" />
       <freejoint />
     </body>
     <body name="sphere_18" pos="-0.99 -1.22 0.1">
-      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <geom type="sphere" size="0.1" rgba="0.31 0.46 0.89 1" />
       <freejoint />
     </body>
     <body name="sphere_19" pos="0.04 -1.45 0.1">
-      <geom type="sphere" size="0.1" rgba="0.2 0.4 0.6 1" />
+      <geom type="sphere" size="0.1" rgba="0.96 0.79 0.21 1" />
       <freejoint />
     </body>
   </worldbody>

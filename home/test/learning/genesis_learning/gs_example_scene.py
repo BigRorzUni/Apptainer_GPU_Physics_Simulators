@@ -1,4 +1,4 @@
-import numpy as np
+import time
 import genesis as gs
 
 ########################## init ##########################
@@ -26,7 +26,7 @@ plane = scene.add_entity(
 # when loading an entity, you can specify its pose in the morph.
 franka = scene.add_entity(
     gs.morphs.MJCF(
-        file  = '../../xml/franka_emika_panda/panda.xml',
+        file  = '../../xml/walker/walker.xml',
         pos   = (1.0, 1.0, 0.0),
         euler = (0, 0, 0),
     ),
@@ -35,23 +35,9 @@ franka = scene.add_entity(
 ########################## build ##########################
 scene.build()
 
-jnt_names = [
-    'joint1',
-    'joint2',
-    'joint3',
-    'joint4',
-    'joint5',
-    'joint6',
-    'joint7',
-    'finger_joint1',
-    'finger_joint2',
-]
-dofs_idx = [franka.get_joint(name).dof_idx_local for name in jnt_names]
-
-print(dofs_idx)
-
 # PD control
 steps = 1000
 for i in range(steps):
 
     scene.step()
+    time.sleep(10)

@@ -10,9 +10,12 @@ def test_genesis_GPU_available():
         gs.morphs.Plane(),
     )
 
+    scene.add_entity(gs.morphs.MJCF(file="xml/pendulum.xml"))
+
     scene.build()
-    for i in range(10):
+    for i in range(1000):
         scene.step()
+        scene.render()
 
     # free resources
     gs.destroy()
