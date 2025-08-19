@@ -10,3 +10,4 @@ home/*
 !home/test/
 !home/test/**
 
+home/test/walker_test/plots/Newton_Genesis_speed.png
