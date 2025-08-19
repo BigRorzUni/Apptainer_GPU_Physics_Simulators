@@ -73,59 +73,38 @@ case "$1" in
     HELP|help)
         print_help
         ;;
-    PLOT|plot)
-        FILE_TYPE=""
-        BATCH_SIZE=""
-        OUTPUT_IMAGE=""
+    plot)
+        shift
+
         SIMULATORS_ARG=""
+        BATCH_SIZE=""
+        FILE_TYPE=""
 
-        # Check number of args after 'plot'
-        if [[ "$#" -lt 2 ]]; then
-            echo "Usage: $0 plot [simulator(s)] <file_type> [batch_size] [output_image]"
-            exit 1
+        # First argument could be simulators, batch size, or file_type
+        if [[ "$#" -ge 1 ]]; then
+            SIMULATORS="$1"
+            SIMULATORS_ARG="--simulators $(echo $SIMULATORS | tr ',' ' ')"
+            shift
         fi
 
-        # Detect if the first arg after 'plot' looks like a file_type (speed, env_fps, total_fps)
-        # If so, user skipped simulators and we set no simulators arg to python (which means 'all')
-        case "$2" in
-            speed|env_fps|total_fps)
-                FILE_TYPE="$2"
-                shift 2
-                ;;
-            *)
-                # Assume first arg is simulators
-                SIMULATORS="$2"
-                # Convert comma-separated to space-separated
-                SIMULATORS_ARG="--simulators $(echo $SIMULATORS | tr ',' ' ')"
-                FILE_TYPE="$3"
-                shift 3
-                ;;
-        esac
-
-        # If FILE_TYPE is still empty, error out
-        if [[ -z "$FILE_TYPE" ]]; then
-            echo "Error: file_type must be specified"
-            exit 1
-        fi
-
-        # Optional batch size
         if [[ "$#" -ge 1 ]]; then
             BATCH_SIZE="--batch_size $1"
-            shift 1
+            shift
         fi
 
-
-        if [[ -n "$BATCH_SIZE" ]]; then
-            BATCH_SIZE_VAL="${BATCH_SIZE#--batch_size }"
-        else
-            BATCH_SIZE_VAL="all"
+        if [[ "$#" -ge 1 ]]; then
+            FILE_TYPE="$1"
+            shift
         fi
 
-        echo "Plotting results for simulators: ${SIMULATORS:-all}, file_type: $FILE_TYPE, batch_size: ${BATCH_SIZE_VAL:-all}"
+        echo "Plotting merged results for simulators: ${SIMULATORS:-all}, batch_size: ${BATCH_SIZE:-all}, file_type: ${FILE_TYPE:-all}"
 
-        python plot_timings.py $SIMULATORS_ARG --base_dir "../loading_test/data" --file_type "$FILE_TYPE" $BATCH_SIZE
+        python plot_timings.py \
+            $SIMULATORS_ARG \
+            $BATCH_SIZE \
+            --base_dir "../loading_test/data" \
+            --file_type "$FILE_TYPE"
         ;;
-
 esac
 
 # 2048
