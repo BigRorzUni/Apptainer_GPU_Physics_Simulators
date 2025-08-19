@@ -55,8 +55,7 @@ def main():
     mj_model.opt.solver = 1
     mj_model.opt.timestep = 0.01
 
-    N_TRIALS = 100  # increase to average
-
+    N_TRIALS = 1000 
     avg_times = []
     avg_mem_per_env = []
 

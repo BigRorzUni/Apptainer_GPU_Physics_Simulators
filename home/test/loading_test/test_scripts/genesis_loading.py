@@ -24,7 +24,7 @@ n_envs = args.B
 
 
 def main():
-    N_TRIALS = 100
+    N_TRIALS = 1000
 
     print("Starting environment load + memory benchmark")
     

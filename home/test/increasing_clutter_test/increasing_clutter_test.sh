@@ -72,7 +72,7 @@ case "$1" in
 esac
 
 
-STEPS=$(awk 'BEGIN {printf "%d\n", 1e6}') 
+STEPS=$(awk 'BEGIN {printf "%d\n", 1e9}') 
 SPHERE_COUNTS=(1 5 10 20)
 
 

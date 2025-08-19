@@ -61,7 +61,7 @@ def main():
     avg_times = []
     avg_mem_per_env = []
 
-    N_TRIALS = 100  
+    N_TRIALS = 1000  
 
     for _ in range(N_TRIALS):
         load_time, mem_per_env = mjx_load_time(mj_model)

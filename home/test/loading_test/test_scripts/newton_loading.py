@@ -64,7 +64,7 @@ def main():
     args = parser.parse_args()
     n_envs = args.B
 
-    N_TRIALS = 100
+    N_TRIALS = 1000
 
     avg_times = []
     avg_mem_per_env = []
