@@ -2,12 +2,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Simulators
-labels = ["MuJoCo", "Genesis", "MJX", "Newton"]
+labels = ["Genesis", "MJX", "Newton"]
 
 # Data arrays (MB per env for each environment size)
-values_2048 = [0.21, 18.03, 1.83, 8.04]
-values_4096 = [2.22, 19.33, 1.28, 14.96]
-values_8192 = [4.20, 22.02, 1.34, 34.57]
+values_2048 = [18.03, 1.83, 8.04]
+values_4096 = [19.34, 1.28, 14.96]
+values_8192 = [22.02, 1.34, 34.57]
 
 x = np.arange(len(labels))  # simulator positions
 width = 0.25  # bar width
