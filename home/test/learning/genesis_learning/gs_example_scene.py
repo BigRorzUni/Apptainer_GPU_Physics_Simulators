@@ -19,14 +19,12 @@ scene = gs.Scene(
 )
 
 ########################## entities ##########################
-plane = scene.add_entity(
-    gs.morphs.Plane(),
-)
+
 
 # when loading an entity, you can specify its pose in the morph.
 franka = scene.add_entity(
     gs.morphs.MJCF(
-        file  = '../../xml/walker/walker.xml',
+        file  = '../../xml/pendulum.xml',
         pos   = (1.0, 1.0, 0.0),
         euler = (0, 0, 0),
     ),
@@ -40,4 +38,3 @@ steps = 1000
 for i in range(steps):
 
     scene.step()
-    time.sleep(10)
